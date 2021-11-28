@@ -23,7 +23,8 @@
         },
         "url": {
             "description": "Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).",
-            "type": "string"
+            "type": "string",
+            "format": "uri"
         },
         "rtl": {
             "description": "Details of the synthesizable RTL design",
@@ -65,55 +66,18 @@
                         }
                     }
                 },
-                "hdl": {
+                "language": {
                     "description": "Information about Hardware Description/Design Language(s) used.",
                     "type": "object",
                     "properties": {
                         "vhdl": {
-                            "type": "object",
-                            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "1993",
-                                        "2000",
-                                        "2002",
-                                        "2008"
-                                    ],
-                                    "default": "2002"
-                                },
-                                "synopsys": {
-                                    "type": "boolean",
-                                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)",
-                                    "default": false
-                                }
-                            }
+                            "$ref": "#/$defs/vhdl"
                         },
                         "verilog": {
-                            "type": "object",
-                            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "1995",
-                                        "2001"
-                                    ],
-                                    "default": "2001"
-                                }
-                            }
+                            "$ref": "#/$defs/verilog"
                         },
                         "systemverilog": {
-                            "type": "object",
-                            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "2005",
-                                        "2009"
-                                    ],
-                                    "default": "2009"
-                                }
-                            }
+                            "$ref": "#/$defs/systemverilog"
                         }
                     }
                 }
@@ -157,51 +121,18 @@
                         }
                     }
                 },
-                "hdl": {
-                    "description": "Information about Hardware Description/Design Language(s) used.",
+                "language": {
+                    "description": "Information about HDL or programming languages used in the testbench.",
                     "type": "object",
                     "properties": {
                         "vhdl": {
-                            "type": "object",
-                            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "1993",
-                                        "2000",
-                                        "2002",
-                                        "2008"
-                                    ]
-                                },
-                                "synopsys": {
-                                    "type": "boolean",
-                                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)"
-                                }
-                            }
+                            "$ref": "#/$defs/vhdl"
                         },
                         "verilog": {
-                            "type": "object",
-                            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "1995",
-                                        "2001"
-                                    ]
-                                }
-                            }
+                            "$ref": "#/$defs/verilog"
                         },
                         "systemverilog": {
-                            "type": "object",
-                            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
-                            "properties": {
-                                "version": {
-                                    "enum": [
-                                        "2005",
-                                        "2009"
-                                    ]
-                                }
-                            }
+                            "$ref": "#/$defs/systemverilog"
                         },
                         "python": {
                             "type": "object",
@@ -234,40 +165,47 @@
                 },
                 "pdi_order": {
                     "description": "Order in which different input segment types should be fed to PDI.",
-                    "enc": {
-                        "type": "array",
-                        "items": {
-                            "enum": [
+                    "properties": {
+                        "enc": {
+                            "type": "array",
+                            "items": {
+                                "enum": [
+                                    "ad",
+                                    "data",
+                                    "npub",
+                                    "tag"
+                                ]
+                            },
+                            "default": [
+                                "npub",
                                 "ad",
                                 "data",
-                                "npub",
                                 "tag"
                             ]
                         },
-                        "default": [
-                            "npub",
-                            "ad",
-                            "data",
-                            "tag"
-                        ]
+                        "dec": {
+                            "type": "array",
+                            "items": {
+                                "enum": [
+                                    "ad",
+                                    "data",
+                                    "npub",
+                                    "tag"
+                                ]
+                            },
+                            "default": [
+                                "npub",
+                                "ad",
+                                "data",
+                                "tag"
+                            ]
+                        }
                     },
-                    "dec": {
-                        "type": "array",
-                        "items": {
-                            "enum": [
-                                "ad",
-                                "data",
-                                "npub",
-                                "tag"
-                            ]
-                        },
-                        "default": [
-                            "npub",
-                            "ad",
-                            "data",
-                            "tag"
-                        ]
-                    }
+                    "default": {},
+                    "required": [
+                        "enc",
+                        "dec"
+                    ]
                 },
                 "pt_block_bits": {
                     "description": "Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations.",
@@ -359,19 +297,91 @@
                                     "default": 0
                                 }
                             }
-                        }
+                        },
+                        "default": {}
                     },
                     "required": [
                         "pdi"
                     ]
+                },
+                "sca_protection": {
+                    "type": "object",
+                    "description": "Implemented countermeasures against side-channel attacks.",
+                    "properties": {
+                        "kind": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": [
+                                "dpa"
+                            ]
+                        },
+                        "order": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 5,
+                            "default": 0
+                        }
+                    },
+                    "default": {}
+                },
+                "required": [
+                    "algorithm",
+                    "ports",
+                    "pt_block_bits",
+                    "ad_block_bits",
+                    "sca_protection"
+                ]
+            }
+        }
+    },
+    "$defs": {
+        "vhdl": {
+            "type": "object",
+            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
+            "properties": {
+                "version": {
+                    "enum": [
+                        "1993",
+                        "2000",
+                        "2002",
+                        "2008"
+                    ],
+                    "default": "2002"
+                },
+                "synopsys": {
+                    "type": "boolean",
+                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)",
+                    "default": false
                 }
-            },
-            "required": [
-                "algorithm",
-                "ports",
-                "pt_block_bits",
-                "ad_block_bits"
-            ]
+            }
+        },
+        "verilog": {
+            "type": "object",
+            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
+            "properties": {
+                "version": {
+                    "enum": [
+                        "1995",
+                        "2001"
+                    ],
+                    "default": "2001"
+                }
+            }
+        },
+        "systemverilog": {
+            "type": "object",
+            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
+            "properties": {
+                "version": {
+                    "enum": [
+                        "2005",
+                        "2009"
+                    ],
+                    "default": "2009"
+                }
+            }
         }
     },
     "required": [
