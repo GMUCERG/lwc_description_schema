@@ -1,0 +1,380 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cryptography.gmu.edu/lwc.schema.json",
+    "title": "LWC Hardware Desgin",
+    "description": "Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter.",
+            "type": "string",
+            "pattern": "^[A-Za-z][-A-Za-z_0-9]+$"
+        },
+        "description": {
+            "description": "A short description of the design.",
+            "type": "string"
+        },
+        "authors": {
+            "description": "A list of names of author(s) for this implementation.",
+            "type": "array",
+            "items": "string"
+        },
+        "url": {
+            "description": "Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).",
+            "type": "string"
+        },
+        "rtl": {
+            "description": "Details of the synthesizable RTL design",
+            "type": "object",
+            "properties": {
+                "sources": {
+                    "description": "Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is '/' (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. NOTE: Xeda `sources` fields can be an `object` containing meta-data such as HDL type and version.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "includes": {
+                    "description": "Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is '/' (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "top": {
+                    "description": "Name of top-level RTL entity/module.",
+                    "type": "string",
+                    "default": "LWC"
+                },
+                "clock_port": {
+                    "description": "Name of top-level RTL clock input. Only a single clock port is supported by LWC API.",
+                    "type": "string",
+                    "default": "clk"
+                },
+                "parameters": {
+                    "description": "Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values.",
+                    "type": "object",
+                    "patternProperties": {
+                        ".+": {
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        }
+                    }
+                },
+                "hdl": {
+                    "description": "Information about Hardware Description/Design Language(s) used.",
+                    "type": "object",
+                    "properties": {
+                        "vhdl": {
+                            "type": "object",
+                            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "1993",
+                                        "2000",
+                                        "2002",
+                                        "2008"
+                                    ],
+                                    "default": "2002"
+                                },
+                                "synopsys": {
+                                    "type": "boolean",
+                                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)",
+                                    "default": false
+                                }
+                            }
+                        },
+                        "verilog": {
+                            "type": "object",
+                            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "1995",
+                                        "2001"
+                                    ],
+                                    "default": "2001"
+                                }
+                            }
+                        },
+                        "systemverilog": {
+                            "type": "object",
+                            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "2005",
+                                        "2009"
+                                    ],
+                                    "default": "2009"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "sources",
+                "top"
+            ]
+        },
+        "tb": {
+            "description": "Details of test-bench used for verification of top-level design. [Optional]",
+            "type": "object",
+            "properties": {
+                "sources": {
+                    "description": "Source files used only for verification. Should NOT contain any of the files included in 'rtl.sources'.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "includes": {
+                    "description": "HDL include file paths",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "top": {
+                    "description": "Name of top-level test entity or module.",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "Testbench parameter or generics specified as a key-value map. The default value of each parameter is overridden by the simulator. For the best tool compatibility, we only support integer and string values.",
+                    "type": "object",
+                    "patternProperties": {
+                        ".+": {
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        }
+                    }
+                },
+                "hdl": {
+                    "description": "Information about Hardware Description/Design Language(s) used.",
+                    "type": "object",
+                    "properties": {
+                        "vhdl": {
+                            "type": "object",
+                            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "1993",
+                                        "2000",
+                                        "2002",
+                                        "2008"
+                                    ]
+                                },
+                                "synopsys": {
+                                    "type": "boolean",
+                                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)"
+                                }
+                            }
+                        },
+                        "verilog": {
+                            "type": "object",
+                            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "1995",
+                                        "2001"
+                                    ]
+                                }
+                            }
+                        },
+                        "systemverilog": {
+                            "type": "object",
+                            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
+                            "properties": {
+                                "version": {
+                                    "enum": [
+                                        "2005",
+                                        "2009"
+                                    ]
+                                }
+                            }
+                        },
+                        "python": {
+                            "type": "object",
+                            "properties": {
+                                "framework": {
+                                    "enum": [
+                                        "cocotb"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "sources",
+                "top"
+            ]
+        },
+        "lwc": {
+            "description": "LWC-specific meta-data",
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow SUPERCOP naming convensions and uniquely identify the scheme's variant and version. Example: 'romulusn1v12'",
+                    "type": [
+                        "string",
+                        "array"
+                    ]
+                },
+                "pdi_order": {
+                    "description": "Order in which different input segment types should be fed to PDI.",
+                    "enc": {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "ad",
+                                "data",
+                                "npub",
+                                "tag"
+                            ]
+                        },
+                        "default": [
+                            "npub",
+                            "ad",
+                            "data",
+                            "tag"
+                        ]
+                    },
+                    "dec": {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "ad",
+                                "data",
+                                "npub",
+                                "tag"
+                            ]
+                        },
+                        "default": [
+                            "npub",
+                            "ad",
+                            "data",
+                            "tag"
+                        ]
+                    }
+                },
+                "pt_block_bits": {
+                    "description": "Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "ad_block_bits": {
+                    "description": "Algorithm's size of associated-data 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "key_bits": {
+                    "type": "integer",
+                    "default": 128
+                },
+                "npub_bits": {
+                    "type": "integer",
+                    "default": 128
+                },
+                "tag_bits": {
+                    "type": "integer",
+                    "default": 128
+                },
+                "hash_bits": {
+                    "type": "integer",
+                    "default": 128
+                },
+                "ports": {
+                    "type": "object",
+                    "description": "Description of LWC ports.",
+                    "properties": {
+                        "pdi": {
+                            "description": "Public Data Input port",
+                            "type": "object",
+                            "properties": {
+                                "bit_width": {
+                                    "description": "Width of each share of PDI data (bits). Width of 'pdi_data' port is 'pdi.bit_width * pdi.shares'.",
+                                    "type": "integer",
+                                    "minimum": 8,
+                                    "maximum": 32
+                                },
+                                "num_shares": {
+                                    "description": "Number of PDI shares. Default is 1 (unprotected).",
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 5,
+                                    "default": 1
+                                }
+                            }
+                        },
+                        "sdi": {
+                            "description": "Secret Data Input port",
+                            "type": "object",
+                            "properties": {
+                                "bit_width": {
+                                    "description": "Width of each share of SDI data (bits). Width of 'sdi_data' port is 'sdi.bit_width * sdi.shares'. Default is the same value as 'pdi.bit_width'",
+                                    "type": "integer",
+                                    "minimum": 8,
+                                    "maximum": 32
+                                },
+                                "num_shares": {
+                                    "description": "Number of SDI shares. Default is the same as 'pdi.num_shares'.",
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 5
+                                }
+                            }
+                        },
+                        "do": {
+                            "description": "Data Output port. 'bit_width' is always the same as 'pdi.bit_width'",
+                            "type": "object",
+                            "properties": {
+                                "num_shares": {
+                                    "description": "Number of DO output shares. Default is the same as 'pdi.num_shares'.",
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 5
+                                }
+                            }
+                        },
+                        "rdi": {
+                            "description": "Random Data Input port.",
+                            "type": "object",
+                            "properties": {
+                                "bit_width": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 2048,
+                                    "default": 0
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "pdi"
+                    ]
+                }
+            },
+            "required": [
+                "algorithm",
+                "ports",
+                "pt_block_bits",
+                "ad_block_bits"
+            ]
+        }
+    },
+    "required": [
+        "name",
+        "rtl",
+        "lwc"
+    ]
+}
