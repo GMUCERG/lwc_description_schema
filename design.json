@@ -1,6 +1,7 @@
 {
     "name": "MyAEAD128-TI3-v1",
     "description": "Hardware implementation of MyAEAD128 protected against DPA atacks up to 3rd order.",
+    "authors": ["Kamyar Mohajerani"],
     "url": "https://cryptography.gmu.edu/",
     "rtl": {
         "sources": [

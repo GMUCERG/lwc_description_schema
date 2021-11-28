@@ -17,7 +17,9 @@
         "authors": {
             "description": "A list of names of author(s) for this implementation.",
             "type": "array",
-            "items": "string"
+            "items": {
+                "type": "string"
+            }
         },
         "url": {
             "description": "Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).",

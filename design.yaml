@@ -1,6 +1,8 @@
 name: MyAEAD128-TI3-v1
 description: Hardware implementation of MyAEAD128 protected against DPA atacks up
   to 3rd order.
+authors:
+- Kamyar Mohajerani
 url: https://cryptography.gmu.edu/
 rtl:
   sources:
@@ -12,7 +14,7 @@ rtl:
     vhdl:
       version: '2008'
 lwc:
-  algorithm: myaead128v2 # SUPERCOP name
+  algorithm: myaead128v2
   pt_block_bits: 128
   ad_block_bits: 128
   ports:
