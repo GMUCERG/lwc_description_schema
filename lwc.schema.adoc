@@ -1,0 +1,213 @@
+> WETZEL_WARNING: Unrecognized JSON Schema.
+
+
+
+'''
+[#reference-design]
+== Design
+
+Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.
+
+.`Design` Properties
+|===
+|   |Type|Description|Required
+
+|**name**
+|`string`
+|A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter.
+| &#10003; Yes
+
+|**description**
+|`string`
+|A short description of the design.
+|No
+
+|**authors**
+|`string` `[]`
+|A list of names of author(s) for this implementation.
+|No
+
+|**url**
+|`string`
+|Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).
+|No
+
+|**rtl**
+|`object`
+|Details of the synthesizable RTL design
+| &#10003; Yes
+
+|**tb**
+|`object`
+|Details of test-bench used for verification of top-level design. [Optional]
+|No
+
+|**lwc**
+|`object`
+|LWC-specific meta-data
+| &#10003; Yes
+
+|===
+
+Additional properties are not allowed.
+
+=== Design.name
+
+A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter.
+
+* **Type**: `string`
+* **Required**:  &#10003; Yes
+* **Pattern**: `^[A-Za-z][-A-Za-z_0-9]+$`
+
+=== Design.description
+
+A short description of the design.
+
+* **Type**: `string`
+* **Required**: No
+
+=== Design.authors
+
+A list of names of author(s) for this implementation.
+
+* **Type**: `string` `[]`
+* **Required**: No
+
+=== Design.url
+
+Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).
+
+* **Type**: `string`
+* **Required**: No
+* **Format**: uri
+
+=== Design.rtl
+
+Details of the synthesizable RTL design
+
+* **Type**: `object`
+* **Required**:  &#10003; Yes
+
+=== Design.tb
+
+Details of test-bench used for verification of top-level design. [Optional]
+
+* **Type**: `object`
+* **Required**: No
+
+=== Design.lwc
+
+LWC-specific meta-data
+
+* **Type**: `object`
+* **Required**:  &#10003; Yes
+
+
+
+
+
+
+'''
+[#reference-systemverilog]
+== SystemVerilog
+
+System<<reference-verilog,`Verilog`>> (IEEE 1800-2005 and onwards) language standard supported by all <<reference-systemverilog,`SystemVerilog`>> files. Verilog files should have a '.sv' extension.
+
+.`SystemVerilog` Properties
+|===
+|   |Type|Description|Required
+
+|**version**
+|`any`
+|
+|No, default: `2009`
+
+|===
+
+Additional properties are allowed.
+
+=== systemverilog.version
+
+* **Type**: `any`
+* **Required**: No, default: `2009`
+* **Allowed values**:
+** `2005`
+** `2009`
+
+
+
+
+
+
+'''
+[#reference-verilog]
+== Verilog
+
+<<reference-verilog,`Verilog`>> language standard supported by all Verilog source files. Covers pre-<<reference-systemverilog,`SystemVerilog`>> standards. Verilog files should have a '.v' extension.
+
+.`Verilog` Properties
+|===
+|   |Type|Description|Required
+
+|**version**
+|`any`
+|
+|No, default: `2001`
+
+|===
+
+Additional properties are allowed.
+
+=== verilog.version
+
+* **Type**: `any`
+* **Required**: No, default: `2001`
+* **Allowed values**:
+** `1995`
+** `2001`
+
+
+
+
+'''
+[#reference-vhdl]
+== VHDL
+
+<<reference-vhdl,`VHDL`>> language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.
+
+.`VHDL` Properties
+|===
+|   |Type|Description|Required
+
+|**version**
+|`any`
+|
+|No, default: `2002`
+
+|**synopsys**
+|`boolean`
+|Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)
+|No, default: `false`
+
+|===
+
+Additional properties are allowed.
+
+=== vhdl.version
+
+* **Type**: `any`
+* **Required**: No, default: `2002`
+* **Allowed values**:
+** `1993`
+** `2000`
+** `2002`
+** `2008`
+
+=== vhdl.synopsys
+
+Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)
+
+* **Type**: `boolean`
+* **Required**: No, default: `false`
+
+

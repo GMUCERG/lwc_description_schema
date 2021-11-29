@@ -581,20 +581,19 @@ Must be one of:
 
 | Property                                 | Type | Title/Description |
 | ---------------------------------------- | ---- | ----------------- |
-| - [algorithm](#lwc_algorithm )           | No   | string or array   | No | - | LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](ht ... |
+| + [algorithm](#lwc_algorithm )           | No   | string or array   | No | - | LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](ht ... |
 | - [pdi_order](#lwc_pdi_order )           | No   | object            | No | - | Order in which different input segment types should be fed to PDI.                   |
-| - [pt_block_bits](#lwc_pt_block_bits )   | No   | integer           | No | - | Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of ... |
-| - [ad_block_bits](#lwc_ad_block_bits )   | No   | integer           | No | - | Algorithm's size of associated-data 'blocks' in bits. This is the number of bits ... |
+| + [pt_block_bits](#lwc_pt_block_bits )   | No   | integer           | No | - | Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of ... |
+| + [ad_block_bits](#lwc_ad_block_bits )   | No   | integer           | No | - | Algorithm's size of associated-data 'blocks' in bits. This is the number of bits ... |
 | - [key_bits](#lwc_key_bits )             | No   | integer           | No | - | -                                                                                    |
 | - [npub_bits](#lwc_npub_bits )           | No   | integer           | No | - | -                                                                                    |
 | - [tag_bits](#lwc_tag_bits )             | No   | integer           | No | - | -                                                                                    |
 | - [hash_bits](#lwc_hash_bits )           | No   | integer           | No | - | -                                                                                    |
-| - [ports](#lwc_ports )                   | No   | object            | No | - | Description of LWC ports.                                                            |
-| - [sca_protection](#lwc_sca_protection ) | No   | object            | No | - | Implemented countermeasures against side-channel attacks.                            |
-| - [required](#lwc_required )             | No   | object            | No | - | -                                                                                    |
+| + [ports](#lwc_ports )                   | No   | object            | No | - | Description of LWC ports.                                                            |
+| + [sca_protection](#lwc_sca_protection ) | No   | object            | No | - | Implemented countermeasures against side-channel attacks.                            |
 |                                          |      |                   |    |   |                                                                                      |
 
-### <a name="lwc_algorithm"></a>7.1. [Optional] Property `Design > lwc > algorithm`
+### <a name="lwc_algorithm"></a>7.1. [Required] Property `Design > lwc > algorithm`
 
 | Type                      | `string or array`                                                         |
 | ------------------------- | ------------------------------------------------------------------------- |
@@ -689,7 +688,7 @@ Must be one of:
 * "npub"
 * "tag"
 
-### <a name="lwc_pt_block_bits"></a>7.3. [Optional] Property `Design > lwc > pt_block_bits`
+### <a name="lwc_pt_block_bits"></a>7.3. [Required] Property `Design > lwc > pt_block_bits`
 
 | Type                      | `integer`                                                                 |
 | ------------------------- | ------------------------------------------------------------------------- |
@@ -703,7 +702,7 @@ Must be one of:
 | **Minimum**  | &ge; 1 |
 |              |        |
 
-### <a name="lwc_ad_block_bits"></a>7.4. [Optional] Property `Design > lwc > ad_block_bits`
+### <a name="lwc_ad_block_bits"></a>7.4. [Required] Property `Design > lwc > ad_block_bits`
 
 | Type                      | `integer`                                                                 |
 | ------------------------- | ------------------------------------------------------------------------- |
@@ -749,7 +748,7 @@ Must be one of:
 | **Default**               | `128`                                                                     |
 |                           |                                                                           |
 
-### <a name="lwc_ports"></a>7.9. [Optional] Property `Design > lwc > ports`
+### <a name="lwc_ports"></a>7.9. [Required] Property `Design > lwc > ports`
 
 | Type                      | `object`                                                                  |
 | ------------------------- | ------------------------------------------------------------------------- |
@@ -922,7 +921,7 @@ Must be one of:
 | **Additional properties** | [[Any type: allowed]](# "Additional Properties of any type are allowed.") |
 |                           |                                                                           |
 
-### <a name="lwc_sca_protection"></a>7.10. [Optional] Property `Design > lwc > sca_protection`
+### <a name="lwc_sca_protection"></a>7.10. [Required] Property `Design > lwc > sca_protection`
 
 | Type                      | `object`                                                |
 | ------------------------- | ------------------------------------------------------- |
@@ -983,12 +982,5 @@ Must be one of:
 | **Minimum**  | &ge; 0 |
 | **Maximum**  | &le; 7 |
 |              |        |
-
-### <a name="lwc_required"></a>7.11. [Optional] Property `Design > lwc > required`
-
-| Type                      | `object`                                                                  |
-| ------------------------- | ------------------------------------------------------------------------- |
-| **Additional properties** | [[Any type: allowed]](# "Additional Properties of any type are allowed.") |
-|                           |                                                                           |
 
 ----------------------------------------------------------------------------------------------------------------------------

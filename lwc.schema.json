@@ -1,5 +1,5 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "$id": "https://cryptography.gmu.edu/lwc.schema.json",
     "title": "Design",
     "description": "Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.",
@@ -362,15 +362,15 @@
                     },
                     "default": {},
                     "additionalProperties": false
-                },
-                "required": [
-                    "algorithm",
-                    "ports",
-                    "pt_block_bits",
-                    "ad_block_bits",
-                    "sca_protection"
-                ]
-            }
+                }
+            },
+            "required": [
+                "algorithm",
+                "ports",
+                "pt_block_bits",
+                "ad_block_bits",
+                "sca_protection"
+            ]
         }
     },
     "$defs": {
