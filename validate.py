@@ -39,12 +39,34 @@ parser.add_argument(
 args = parser.parse_args()
 
 schema_doc_config = GenerationConfiguration(
-    copy_css=True, expand_buttons=True, description_is_markdown=True)
+    # expand_buttons=True,
+    description_is_markdown=True,
+    with_footer=False,
+    template_name='md',
+)
 
-if args.gen_html_doc or args.gen_md_doc:
-    filename = "lwc.schema.md" if args.gen_md_doc else "lwc.schema.html"
+if args.gen_html_doc:
+    filename = "lwc.schema.html"
+    schema_doc_config = GenerationConfiguration(
+        # expand_buttons=True,
+        description_is_markdown=True,
+        with_footer=False,
+        link_to_reused_ref = False,
+        template_name='js', # or flat
+    )
     generate_from_filename(schema_file, filename, config=schema_doc_config)
-    # print(f"Generated documentation for Schema: {filename}")
+
+if args.gen_md_doc:
+    filename = "lwc.schema.md"
+    schema_doc_config = GenerationConfiguration(
+        # expand_buttons=True,
+        description_is_markdown=True,
+        with_footer=False,
+        # link_to_reused_ref = False,
+        show_toc = False,
+        template_name='md', # or "md_nested"
+    )
+    generate_from_filename(schema_file, filename, config=schema_doc_config)
 
 
 design_file_path = Path(args.design_file)

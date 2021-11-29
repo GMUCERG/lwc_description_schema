@@ -1,16 +1,18 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://cryptography.gmu.edu/lwc.schema.json",
-    "title": "LWC Hardware Desgin",
+    "title": "Design",
     "description": "Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.",
     "type": "object",
     "properties": {
         "name": {
+            "title": "Name",
             "description": "A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter.",
             "type": "string",
             "pattern": "^[A-Za-z][-A-Za-z_0-9]+$"
         },
         "description": {
+            "title": "Description",
             "description": "A short description of the design.",
             "type": "string"
         },
@@ -27,6 +29,7 @@
             "format": "uri"
         },
         "rtl": {
+            "title": "RTL",
             "description": "Details of the synthesizable RTL design",
             "type": "object",
             "properties": {
@@ -96,6 +99,7 @@
                     }
                 },
                 "language": {
+                    "title": "Languages",
                     "description": "Information about Hardware Description/Design Language(s) used.",
                     "type": "object",
                     "properties": {
@@ -114,9 +118,11 @@
             "required": [
                 "sources",
                 "top"
-            ]
+            ],
+            "additionalProperties": false
         },
         "tb": {
+            "title": "Testbench",
             "description": "Details of test-bench used for verification of top-level design. [Optional]",
             "type": "object",
             "properties": {
@@ -179,9 +185,11 @@
             "required": [
                 "sources",
                 "top"
-            ]
+            ],
+            "additionalProperties": false
         },
         "lwc": {
+            "title": "LWC",
             "description": "LWC-specific meta-data",
             "type": "object",
             "properties": {
@@ -352,7 +360,8 @@
                             "default": 0
                         }
                     },
-                    "default": {}
+                    "default": {},
+                    "additionalProperties": false
                 },
                 "required": [
                     "algorithm",
@@ -366,8 +375,9 @@
     },
     "$defs": {
         "vhdl": {
-            "type": "object",
+            "title": "VHDL",
             "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
+            "type": "object",
             "properties": {
                 "version": {
                     "enum": [
@@ -386,8 +396,9 @@
             }
         },
         "verilog": {
-            "type": "object",
+            "title": "Verilog",
             "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
+            "type": "object",
             "properties": {
                 "version": {
                     "enum": [
@@ -399,8 +410,9 @@
             }
         },
         "systemverilog": {
-            "type": "object",
+            "title": "SystemVerilog",
             "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
+            "type": "object",
             "properties": {
                 "version": {
                     "enum": [
@@ -416,5 +428,6 @@
         "name",
         "rtl",
         "lwc"
-    ]
+    ],
+    "additionalProperties": false
 }
