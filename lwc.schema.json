@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://cryptography.gmu.edu/lwc.schema.json",
     "title": "Design",
     "description": "Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.",
