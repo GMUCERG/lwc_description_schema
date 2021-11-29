@@ -4,17 +4,22 @@
 #  python3 -m pip install -U -r requirements.txt
 #
 import json
-from typing import Any, Dict, Mapping, Type
+from typing import Any, Dict, Mapping, OrderedDict, Type
 import jsonschema
 from jsonschema import Draft202012Validator, validators
 from enum import Enum, auto
 from pathlib import Path
 import toml
+from toml import ordered as toml_ordered
 import yaml
 import argparse
 from functools import reduce
+from json_schema_for_humans.generate import generate_from_filename
+from json_schema_for_humans.generation_configuration import GenerationConfiguration
+
 
 schema_file = "lwc.schema.json"
+
 
 parser = argparse.ArgumentParser(description='Validate LWC design files.')
 parser.add_argument('design_file')
@@ -26,8 +31,21 @@ parser.add_argument(
     '--write-yaml', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument(
     '--with-defaults', action='store_true')
+parser.add_argument(
+    '--gen-html-doc', action='store_true')
+parser.add_argument(
+    '--gen-md-doc', action='store_true')
 
 args = parser.parse_args()
+
+schema_doc_config = GenerationConfiguration(
+    copy_css=True, expand_buttons=True, description_is_markdown=True)
+
+if args.gen_html_doc or args.gen_md_doc:
+    filename = "lwc.schema.md" if args.gen_md_doc else "lwc.schema.html"
+    generate_from_filename(schema_file, filename, config=schema_doc_config)
+    # print(f"Generated documentation for Schema: {filename}")
+
 
 design_file_path = Path(args.design_file)
 
@@ -78,10 +96,11 @@ def extend_with_default(validator_class):
     )
 
 
-# if args.with_defaults else Draft202012Validator
-validator = extend_with_default(Draft202012Validator)
+validator = extend_with_default(
+    Draft202012Validator) if args.with_defaults else Draft202012Validator
 
-default_reference = validator(schema, format_checker=jsonschema.draft202012_format_checker)
+default_reference = validator(
+    schema, format_checker=jsonschema.draft202012_format_checker)
 failed = False
 for error in sorted(default_reference.iter_errors(design), key=str):
     print(f"[ERROR] {'.'.join(error.path)}: {error.message}")
@@ -90,6 +109,7 @@ if failed:
     print("Design file is INVALID")
     exit(1)
 
+
 def get_path(dct: Dict[str, Any], path, sep='.'):
     if isinstance(path, str):
         path = path.split(sep)
@@ -97,6 +117,7 @@ def get_path(dct: Dict[str, Any], path, sep='.'):
         return reduce(dict.__getitem__, path, dct)
     except:
         return None
+
 
 def set_path(dct: Dict[str, Any], path, value, sep='.'):
     if isinstance(path, str):
@@ -110,19 +131,20 @@ def set_path(dct: Dict[str, Any], path, value, sep='.'):
         set_path(dct[k], path[1:], value, sep)
 
 
-## add missing properties from other properties
+# add missing properties from other properties
 defaults = {
-    'lwc.ports.sdi.bit_width' : 'lwc.ports.pdi.bit_width',
+    'lwc.ports.sdi.bit_width': 'lwc.ports.pdi.bit_width',
     'lwc.ports.sdi.num_shares': 'lwc.ports.pdi.num_shares',
-    'lwc.ports.do.bit_width'  : 'lwc.ports.pdi.bit_width',
-    'lwc.ports.do.num_shares' : 'lwc.ports.pdi.num_shares',
+    'lwc.ports.do.bit_width': 'lwc.ports.pdi.bit_width',
+    'lwc.ports.do.num_shares': 'lwc.ports.pdi.num_shares',
 }
 
-for k, default_reference in defaults.items():
-    if get_path(design, k) is None:
-        default_value = get_path(design, default_reference)
-        print(f"missing {k} set to {default_reference} = {default_value}")
-        set_path(design, k, default_value)
+if args.with_defaults:
+    for k, default_reference in defaults.items():
+        if get_path(design, k) is None:
+            default_value = get_path(design, default_reference)
+            print(f"missing {k} set to {default_reference} = {default_value}")
+            set_path(design, k, default_value)
 
 for files in [design['rtl']['sources'], design.get('rtl', {}).get('includes', []), design.get('tb', {}).get('sources', []), design.get('tb', {}).get('includes', []), ]:
     for f in files:
@@ -135,15 +157,17 @@ if failed:
     exit(1)
 
 
-
-assert (get_path(design, 'lwc.sca_protection.order') > 0) == (get_path(design, 'lwc.ports.pdi.num_shares') > 1)
+assert (get_path(design, 'lwc.sca_protection.dpa_order') > 0) == (
+    get_path(design, 'lwc.ports.pdi.num_shares') > 1) == (get_path(design, 'lwc.ports.pdi.num_shares') > 1)
 
 
 print("Design file is VALID")
 
 if args.write_toml:
     with open(design_file_path.with_suffix(".toml"), "w") as tf:
-        toml.dump(design, tf)
+        # toml.dump(design, tf, encoder=toml_ordered.TomlOrderedEncoder())
+        toml.dump(design, tf, encoder=toml.TomlEncoder(
+            _dict=OrderedDict, preserve=True))
 
 if args.write_yaml:
     with open(design_file_path.with_suffix(".yaml"), "w") as tf:

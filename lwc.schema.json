@@ -49,10 +49,39 @@
                     "type": "string",
                     "default": "LWC"
                 },
-                "clock_port": {
-                    "description": "Name of top-level RTL clock input. Only a single clock port is supported by LWC API.",
-                    "type": "string",
-                    "default": "clk"
+                "clock": {
+                    "description": "Top level RTL clock signal. Only a single clock is supported by LWC API",
+                    "type": "object",
+                    "properties": {
+                        "port": {
+                            "description": "Name of the top-level RTL clock input.",
+                            "type": "string",
+                            "default": "clk"
+                        }
+                    },
+                    "default": {}
+                },
+                "reset": {
+                    "description": "Top level reset signal. Only a single reset is supported by LWC API.",
+                    "type": "object",
+                    "properties": {
+                        "port": {
+                            "description": "Name of top-level RTL reset input.",
+                            "type": "string",
+                            "default": "reset"
+                        },
+                        "active_high": {
+                            "description": "Polarity of the reset signal. Active-high (positive) if true, otherwise active-low.",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "synchronous": {
+                            "description": "Reset is synchronous (positive) if true, otherwise asynchronous.",
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    "default": {}
                 },
                 "parameters": {
                     "description": "Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values.",
@@ -157,7 +186,7 @@
             "type": "object",
             "properties": {
                 "algorithm": {
-                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow SUPERCOP naming convensions and uniquely identify the scheme's variant and version. Example: 'romulusn1v12'",
+                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) naming conventions and uniquely identify the scheme's variant and version. Example: 'romulusn1v12'",
                     "type": [
                         "string",
                         "array"
@@ -251,7 +280,7 @@
                                     "description": "Number of PDI shares. Default is 1 (unprotected).",
                                     "type": "integer",
                                     "minimum": 1,
-                                    "maximum": 5,
+                                    "maximum": 8,
                                     "default": 1
                                 }
                             }
@@ -270,7 +299,7 @@
                                     "description": "Number of SDI shares. Default is the same as 'pdi.num_shares'.",
                                     "type": "integer",
                                     "minimum": 1,
-                                    "maximum": 5
+                                    "maximum": 8
                                 }
                             }
                         },
@@ -282,7 +311,7 @@
                                     "description": "Number of DO output shares. Default is the same as 'pdi.num_shares'.",
                                     "type": "integer",
                                     "minimum": 1,
-                                    "maximum": 5
+                                    "maximum": 8
                                 }
                             }
                         },
@@ -308,19 +337,18 @@
                     "type": "object",
                     "description": "Implemented countermeasures against side-channel attacks.",
                     "properties": {
-                        "kind": {
+                        "attacks": {
                             "type": "array",
+                            "description": "Family and type of side-channel analysis attack(s) this design is claims to be secure against. Examples: 'spa', 'dpa', 'cpa', 'timing', 'sifa', 'dfia', etc",
                             "items": {
                                 "type": "string"
-                            },
-                            "default": [
-                                "dpa"
-                            ]
+                            }
                         },
-                        "order": {
+                        "dpa_order": {
+                            "description": "Claimed order of protectcion against differential power analysis. 0 means unprotected.",
                             "type": "integer",
                             "minimum": 0,
-                            "maximum": 5,
+                            "maximum": 7,
                             "default": 0
                         }
                     },

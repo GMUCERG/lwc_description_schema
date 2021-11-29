@@ -6,7 +6,18 @@ url = "https://cryptography.gmu.edu/"
 [rtl]
 sources = [ "src_rtl/v1/MyPKG.vhd", "src_rtl/v1/api.v", "src_rtl/v1/LWC.v",]
 top = "LWC"
-clock_port = "clk"
+
+[rtl.clock]
+port = "clk"
+
+[rtl.reset]
+port = "reset"
+active_high = true
+synchronous = true
+
+[rtl.language.vhdl]
+version = "2008"
+synopsys = false
 
 [lwc]
 algorithm = "myaead128v2"
@@ -18,16 +29,13 @@ tag_bits = 128
 hash_bits = 128
 
 [lwc.sca_protection]
-order = 1
-kind = [ "dpa",]
+attacks = [ "timing", "sda", "dpa",]
+dpa_order = 1
 
 [lwc.pdi_order]
 enc = [ "npub", "ad", "data", "tag",]
 dec = [ "npub", "ad", "data", "tag",]
 
-[rtl.language.vhdl]
-version = "2008"
-synopsys = false
 
 [lwc.ports.pdi]
 bit_width = 32
