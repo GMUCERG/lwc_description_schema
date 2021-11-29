@@ -5,6 +5,7 @@
         "Kamyar Mohajerani"
     ],
     "url": "https://cryptography.gmu.edu/",
+    "version": "0.1",
     "rtl": {
         "sources": [
             "src_rtl/v1/MyPKG.vhd",
@@ -54,16 +55,16 @@
             "dpa_order": 1
         },
         "pdi_order": {
-            "enc": [
+            "encrypt": [
                 "npub",
                 "ad",
-                "data",
+                "pt",
                 "tag"
             ],
-            "dec": [
+            "decrypt": [
                 "npub",
                 "ad",
-                "data",
+                "ct",
                 "tag"
             ]
         },

@@ -14,8 +14,6 @@ from toml import ordered as toml_ordered
 import yaml
 import argparse
 from functools import reduce
-from json_schema_for_humans.generate import generate_from_filename
-from json_schema_for_humans.generation_configuration import GenerationConfiguration
 
 
 schema_file = "lwc.schema.json"
@@ -37,36 +35,6 @@ parser.add_argument(
     '--gen-md-doc', action='store_true')
 
 args = parser.parse_args()
-
-schema_doc_config = GenerationConfiguration(
-    # expand_buttons=True,
-    description_is_markdown=True,
-    with_footer=False,
-    template_name='md',
-)
-
-if args.gen_html_doc:
-    filename = "lwc.schema.html"
-    schema_doc_config = GenerationConfiguration(
-        # expand_buttons=True,
-        description_is_markdown=True,
-        with_footer=False,
-        link_to_reused_ref = False,
-        template_name='js', # or flat
-    )
-    generate_from_filename(schema_file, filename, config=schema_doc_config)
-
-if args.gen_md_doc:
-    filename = "lwc.schema.md"
-    schema_doc_config = GenerationConfiguration(
-        # expand_buttons=True,
-        description_is_markdown=True,
-        with_footer=False,
-        # link_to_reused_ref = False,
-        show_toc = False,
-        template_name='md', # or "md_nested"
-    )
-    generate_from_filename(schema_file, filename, config=schema_doc_config)
 
 
 design_file_path = Path(args.design_file)
@@ -90,6 +58,55 @@ else:
 
 with open(schema_file) as sf:
     schema = json.load(sf)
+
+if args.gen_md_doc:
+    try:
+        from .validate.jsonschema2md import Parser
+    except:
+        from validate.jsonschema2md import Parser
+    filename = "lwc_design_doc.md"
+    # schema_doc_config = GenerationConfiguration(
+    #     # expand_buttons=True,
+    #     description_is_markdown=True,
+    #     with_footer=False,
+    #     # link_to_reused_ref = False,
+    #     show_toc = False,
+    #     template_name='md', # or "md_nested"
+    # )
+    # generate_from_filename(schema_file, filename, config=schema_doc_config)
+    parser = Parser(schema)
+    md_lines = parser.generate_md()
+    md_content = "".join(md_lines)
+    with open(filename, "w") as output_markdown:
+        output_markdown.write(md_content)
+    pdf_file_path = "lwc_design_doc.pdf"
+
+    from markdown2 import markdown
+    md = markdown(md_content, extras = None)
+    
+    with open("lwc_design_doc.html", "w") as output_markdown:
+        output_markdown.write(md)
+
+    from weasyprint import HTML, CSS
+    html = HTML(string=md)
+    css = []
+    css.append(CSS(filename='validate/md.css'))
+    html.write_pdf(pdf_file_path, stylesheets=css)
+
+if args.gen_html_doc:
+    filename = "lwc.schema.html"
+    from json_schema_for_humans.generate import generate_from_filenasme
+    from json_schema_for_humans.generation_configuration import GenerationConfiguration
+
+    schema_doc_config = GenerationConfiguration(
+        # expand_buttons=True,
+        description_is_markdown=True,
+        with_footer=False,
+        link_to_reused_ref=False,
+        template_name='js',  # or flat
+    )
+    generate_from_filename(schema_file, filename, config=schema_doc_config)
+
 
 with open(design_file_path) as df:
     if design_file_type == DesignFileType.JSON:

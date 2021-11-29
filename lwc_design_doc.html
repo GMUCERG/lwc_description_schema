@@ -1,0 +1,121 @@
+<h1>Design</h1>
+
+<p>Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.</p>
+
+<h2>Properties:</h2>
+
+<ul>
+<li><strong>name</strong> <em>(string)</em>: A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter.&ensp;</li>
+<li><strong>description</strong> <em>(string)</em>: A short description of the design.&ensp;</li>
+<li><strong>authors</strong> <em>(array of strings)</em>: A list of names of author(s) for this implementation.&ensp;</li>
+<li><strong>url</strong> <em>(string)</em>: Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s).&ensp;</li>
+<li><strong>version</strong> <em>(string)</em>: Design version.&ensp;
+<em>Examples:</em>
+    <code>"0.0.1"</code></li>
+<li><strong>rtl</strong>: Details of the synthesizable RTL design.&ensp; Cannot contain additional properties.
+<ul>
+<li><strong>sources</strong> <em>(array of strings)</em>: Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. NOTE: Xeda <code>sources</code> fields can be an <code>object</code> containing meta-data such as HDL type and version.&ensp;</li>
+<li><strong>includes</strong> <em>(array of strings)</em>: Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.&ensp;</li>
+<li><strong>top</strong> <em>(string)</em>: Name of top-level RTL entity/module.&ensp;   <em>Default:</em> <code>LWC</code>&nbsp;</li>
+<li><strong>clock</strong>: Top level RTL clock signal. Only a single clock is supported by LWC API.&ensp;
+<ul>
+<li><strong>port</strong> <em>(string)</em>: Name of the top-level RTL clock input.&ensp;   <em>Default:</em> <code>clk</code>&nbsp;</li>
+</ul></li>
+<li><strong>reset</strong>: Top level reset signal. Only a single reset is supported by LWC API.&ensp;
+<ul>
+<li><strong>port</strong> <em>(string)</em>: Name of top-level RTL reset input.&ensp;   <em>Default:</em> <code>reset</code>&nbsp;</li>
+<li><strong>active_high</strong> <em>(boolean)</em>: Polarity of the reset signal. Active-high (positive) if true, otherwise active-low.&ensp;   <em>Default:</em> <code>true</code>&nbsp;</li>
+<li><strong>synchronous</strong> <em>(boolean)</em>: Reset is synchronous (positive) if true, otherwise asynchronous.&ensp;   <em>Default:</em> <code>true</code>&nbsp;</li>
+</ul></li>
+<li><strong>parameters</strong>: Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values.&ensp;</li>
+<li><strong>language</strong>: Information about Hardware Description/Design Language(s) used.&ensp;
+<ul>
+<li><strong>vhdl</strong>: VHDL language standard supported by all VHDL source files. VHDL files should have a <code>.vhd</code> or <code>.vhdl</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>&nbsp;   <em>Default:</em> <code>2002</code>&nbsp;</li>
+<li><strong>synopsys</strong> <em>(boolean)</em>: Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard <code>IEEE</code> libraries is <em>strongly</em> discouraged!).&ensp;   <em>Default:</em> <code>false</code>&nbsp;</li>
+</ul></li>
+<li><strong>verilog</strong>: Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a <code>.v</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>1995</code>, <code>2001</code>&nbsp;   <em>Default:</em> <code>2001</code>&nbsp;</li>
+</ul></li>
+<li><strong>systemverilog</strong>: SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a <code>.sv</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>2005</code>, <code>2009</code>&nbsp;   <em>Default:</em> <code>2009</code>&nbsp;</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><strong>tb</strong>: Details of test-bench used for verification of top-level design. [Optional].&ensp; Cannot contain additional properties.
+<ul>
+<li><strong>sources</strong> <em>(array of strings)</em>: Source files used only for verification. Should <em>not</em> contain any of the files included in 'rtl.sources'.&ensp;</li>
+<li><strong>includes</strong> <em>(array of strings)</em>: HDL include file paths.&ensp;</li>
+<li><strong>top</strong> <em>(string)</em>: Name of top-level test entity or module.&ensp;</li>
+<li><strong>parameters</strong>: Testbench parameter or generics specified as a key-value map. The default value of each parameter is overridden by the simulator. For the best tool compatibility, we only support integer and string values.&ensp;</li>
+<li><strong>language</strong>: Information about HDL or programming languages used in the testbench.&ensp;
+<ul>
+<li><strong>vhdl</strong>: VHDL language standard supported by all VHDL source files. VHDL files should have a <code>.vhd</code> or <code>.vhdl</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>&nbsp;   <em>Default:</em> <code>2002</code>&nbsp;</li>
+<li><strong>synopsys</strong> <em>(boolean)</em>: Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard <code>IEEE</code> libraries is <em>strongly</em> discouraged!).&ensp;   <em>Default:</em> <code>false</code>&nbsp;</li>
+</ul></li>
+<li><strong>verilog</strong>: Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a <code>.v</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>1995</code>, <code>2001</code>&nbsp;   <em>Default:</em> <code>2001</code>&nbsp;</li>
+</ul></li>
+<li><strong>systemverilog</strong>: SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a <code>.sv</code> extension.&ensp;
+<ul>
+<li><strong>version</strong> <em>(string)</em>:   <em>Supported values:</em> <code>2005</code>, <code>2009</code>&nbsp;   <em>Default:</em> <code>2009</code>&nbsp;</li>
+</ul></li>
+<li><strong>python</strong>
+<ul>
+<li><strong>version</strong> <em>(string)</em></li>
+<li><strong>framework</strong> <em>(string)</em>:   <em>Supported values:</em> <code>cocotb</code>&nbsp;</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><strong>lwc</strong>: LWC-specific meta-data.&ensp;
+<ul>
+<li><strong>algorithms</strong> <em>(string or array of strings)</em>: LWC AEAD/Hash algorithm(s) supported by this design. Should follow <a href="https://bench.cr.yp.to/primitives-aead.html">SUPERCOP</a> naming conventions and uniquely identify the scheme's variant and version. In case of duplicates, the second instance indicates support for AEAD and Hash algorithms with the same name.&ensp;
+<em>Examples:</em>
+        <code>["giftcofb128v1"]</code>, <code>["romulusn1v12"]</code>, <code>["gimli24v1", "gimli24v1"]</code></li>
+<li><strong>input_sequence</strong>: Order in which different input segment types should be fed to PDI.&ensp;
+<ul>
+<li><strong>encrypt</strong> <em>(array of strings)</em>:   <em>Default:</em> <code>['npub', 'ad', 'pt', 'tag']</code>&nbsp;</li>
+<li><strong>decrypt</strong> <em>(array of strings)</em>:   <em>Default:</em> <code>['npub', 'ad', 'ct', 'tag']</code>&nbsp;</li>
+</ul></li>
+<li><strong>pt_block_bits</strong> <em>(integer)</em>: Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations.&ensp;   <em>Minimum:</em> <code>1</code>&nbsp;</li>
+<li><strong>ad_block_bits</strong> <em>(integer)</em>: Algorithm's size of associated-data 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations.&ensp;   <em>Minimum:</em> <code>1</code>&nbsp;</li>
+<li><strong>key_bits</strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code>&nbsp;</li>
+<li><strong>npub_bits</strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code>&nbsp;</li>
+<li><strong>tag_bits</strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code>&nbsp;</li>
+<li><strong>hash_bits</strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code>&nbsp;</li>
+<li><strong>ports</strong>: Description of LWC ports.&ensp;
+<ul>
+<li><strong>pdi</strong>: Public Data Input port.&ensp;
+<ul>
+<li><strong>bit_width</strong> <em>(integer)</em>: Width of each share of PDI data (bits). Width of 'pdi<em>data' port is 'pdi.bit</em>width * pdi.shares'.&ensp;   <em>Minimum:</em> <code>8</code>&nbsp;   <em>Maximum:</em> <code>32</code>&nbsp;</li>
+<li><strong>num_shares</strong> <em>(integer)</em>: Number of PDI shares. Default is 1 (unprotected).&ensp;   <em>Minimum:</em> <code>1</code>&nbsp;   <em>Maximum:</em> <code>8</code>&nbsp;   <em>Default:</em> <code>1</code>&nbsp;</li>
+</ul></li>
+<li><strong>sdi</strong>: Secret Data Input port.&ensp;
+<ul>
+<li><strong>bit_width</strong> <em>(integer)</em>: Width of each share of SDI data (bits). Width of <code>sdi_data</code> port is <code>sdi.bit_width * sdi.shares</code>. Default is the same value as <code>pdi.bit_width</code>.&ensp;   <em>Minimum:</em> <code>8</code>&nbsp;   <em>Maximum:</em> <code>32</code>&nbsp;</li>
+<li><strong>num_shares</strong> <em>(integer)</em>: Number of SDI shares. Default is the same as <code>pdi.num_shares</code>.&ensp;   <em>Minimum:</em> <code>1</code>&nbsp;   <em>Maximum:</em> <code>8</code>&nbsp;</li>
+</ul></li>
+<li><strong>do</strong>: Data Output port. Width of each share is always the same as <code>pdi.bit_width</code>.&ensp;
+<ul>
+<li><strong>num_shares</strong> <em>(integer)</em>: Number of <code>DO</code> output shares. Default is the same as <code>pdi.num_shares</code>.&ensp;   <em>Minimum:</em> <code>1</code>&nbsp;   <em>Maximum:</em> <code>8</code>&nbsp;</li>
+</ul></li>
+<li><strong>rdi</strong>: Random Data Input port.&ensp;
+<ul>
+<li><strong>bit_width</strong> <em>(integer)</em>:   <em>Minimum:</em> <code>0</code>&nbsp;   <em>Maximum:</em> <code>2048</code>&nbsp;   <em>Default:</em> <code>0</code>&nbsp;</li>
+</ul></li>
+</ul></li>
+<li><strong>sca_protection</strong>: Implemented countermeasures against side-channel attacks.&ensp; Cannot contain additional properties.
+<ul>
+<li><strong>attacks</strong> <em>(array of strings)</em>: Family and type of side-channel analysis attack(s) this design is claims to be secure against.&ensp;
+<em>Examples:</em>
+            <code>["spa", "dpa", "cpa", "timing"]</code>, <code>["dpa", "sifa", "dfia"]</code></li>
+<li><strong>dpa_order</strong> <em>(integer)</em>: Claimed order of protectcion against differential power analysis. 0 means unprotected.&ensp;   <em>Minimum:</em> <code>0</code>&nbsp;   <em>Maximum:</em> <code>7</code>&nbsp;   <em>Default:</em> <code>0</code>&nbsp;</li>
+</ul></li>
+</ul></li>
+</ul>

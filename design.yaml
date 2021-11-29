@@ -4,6 +4,7 @@ description: Hardware implementation of MyAEAD128 protected against first order 
 authors:
 - Kamyar Mohajerani
 url: https://cryptography.gmu.edu/
+version: '0.1'
 rtl:
   sources:
   - src_rtl/v1/MyPKG.vhd
@@ -41,15 +42,15 @@ lwc:
     - dpa
     dpa_order: 1
   pdi_order:
-    enc:
+    encrypt:
     - npub
     - ad
-    - data
+    - pt
     - tag
-    dec:
+    decrypt:
     - npub
     - ad
-    - data
+    - ct
     - tag
   key_bits: 128
   npub_bits: 128

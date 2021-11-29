@@ -28,20 +28,26 @@
             "type": "string",
             "format": "uri"
         },
+        "version": {
+            "description": "Design version.",
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)(\\.(0|[1-9]\\d*)(\\.(0|[1-9]\\d*))?)?$",
+            "examples": ["0.0.1"]
+        },
         "rtl": {
             "title": "RTL",
             "description": "Details of the synthesizable RTL design",
             "type": "object",
             "properties": {
                 "sources": {
-                    "description": "Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is '/' (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. NOTE: Xeda `sources` fields can be an `object` containing meta-data such as HDL type and version.",
+                    "description": "Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is `/` (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. NOTE: Xeda `sources` fields can be an `object` containing meta-data such as HDL type and version.",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "includes": {
-                    "description": "Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is '/' (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.",
+                    "description": "Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is `/` (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -127,7 +133,7 @@
             "type": "object",
             "properties": {
                 "sources": {
-                    "description": "Source files used only for verification. Should NOT contain any of the files included in 'rtl.sources'.",
+                    "description": "Source files used only for verification. Should _not_ contain any of the files included in 'rtl.sources'.",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -172,7 +178,11 @@
                         "python": {
                             "type": "object",
                             "properties": {
+                                "version": {
+                                    "type": "string"
+                                },
                                 "framework": {
+                                    "type": "string",
                                     "enum": [
                                         "cocotb"
                                     ]
@@ -193,22 +203,38 @@
             "description": "LWC-specific meta-data",
             "type": "object",
             "properties": {
-                "algorithm": {
-                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) naming conventions and uniquely identify the scheme's variant and version. Example: 'romulusn1v12'",
+                "algorithms": {
+                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) naming conventions and uniquely identify the scheme's variant and version. In case of duplicates, the second instance indicates support for AEAD and Hash algorithms with the same name.",
                     "type": [
                         "string",
                         "array"
+                    ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "examples": [
+                        [
+                            "giftcofb128v1"
+                        ],
+                        [
+                            "romulusn1v12"
+                        ],
+                        [
+                            "gimli24v1",
+                            "gimli24v1"
+                        ]
                     ]
                 },
-                "pdi_order": {
+                "input_sequence": {
                     "description": "Order in which different input segment types should be fed to PDI.",
                     "properties": {
-                        "enc": {
+                        "encrypt": {
                             "type": "array",
                             "items": {
+                                "type": "string",
                                 "enum": [
                                     "ad",
-                                    "data",
+                                    "pt",
                                     "npub",
                                     "tag"
                                 ]
@@ -216,16 +242,17 @@
                             "default": [
                                 "npub",
                                 "ad",
-                                "data",
+                                "pt",
                                 "tag"
                             ]
                         },
-                        "dec": {
+                        "decrypt": {
                             "type": "array",
                             "items": {
+                                "type": "string",
                                 "enum": [
                                     "ad",
-                                    "data",
+                                    "ct",
                                     "npub",
                                     "tag"
                                 ]
@@ -233,7 +260,7 @@
                             "default": [
                                 "npub",
                                 "ad",
-                                "data",
+                                "ct",
                                 "tag"
                             ]
                         }
@@ -298,13 +325,13 @@
                             "type": "object",
                             "properties": {
                                 "bit_width": {
-                                    "description": "Width of each share of SDI data (bits). Width of 'sdi_data' port is 'sdi.bit_width * sdi.shares'. Default is the same value as 'pdi.bit_width'",
+                                    "description": "Width of each share of SDI data (bits). Width of `sdi_data` port is `sdi.bit_width * sdi.shares`. Default is the same value as `pdi.bit_width`",
                                     "type": "integer",
                                     "minimum": 8,
                                     "maximum": 32
                                 },
                                 "num_shares": {
-                                    "description": "Number of SDI shares. Default is the same as 'pdi.num_shares'.",
+                                    "description": "Number of SDI shares. Default is the same as `pdi.num_shares`.",
                                     "type": "integer",
                                     "minimum": 1,
                                     "maximum": 8
@@ -312,11 +339,11 @@
                             }
                         },
                         "do": {
-                            "description": "Data Output port. 'bit_width' is always the same as 'pdi.bit_width'",
+                            "description": "Data Output port. Width of each share is always the same as `pdi.bit_width`",
                             "type": "object",
                             "properties": {
                                 "num_shares": {
-                                    "description": "Number of DO output shares. Default is the same as 'pdi.num_shares'.",
+                                    "description": "Number of `DO` output shares. Default is the same as `pdi.num_shares`.",
                                     "type": "integer",
                                     "minimum": 1,
                                     "maximum": 8
@@ -334,12 +361,12 @@
                                     "default": 0
                                 }
                             }
-                        },
-                        "default": {}
+                        }
                     },
                     "required": [
                         "pdi"
-                    ]
+                    ],
+                    "default": {}
                 },
                 "sca_protection": {
                     "type": "object",
@@ -347,10 +374,23 @@
                     "properties": {
                         "attacks": {
                             "type": "array",
-                            "description": "Family and type of side-channel analysis attack(s) this design is claims to be secure against. Examples: 'spa', 'dpa', 'cpa', 'timing', 'sifa', 'dfia', etc",
+                            "description": "Family and type of side-channel analysis attack(s) this design is claims to be secure against.",
                             "items": {
                                 "type": "string"
-                            }
+                            },
+                            "examples": [
+                                [
+                                    "spa",
+                                    "dpa",
+                                    "cpa",
+                                    "timing"
+                                ],
+                                [
+                                    "dpa",
+                                    "sifa",
+                                    "dfia"
+                                ]
+                            ]
                         },
                         "dpa_order": {
                             "description": "Claimed order of protectcion against differential power analysis. 0 means unprotected.",
@@ -376,10 +416,11 @@
     "$defs": {
         "vhdl": {
             "title": "VHDL",
-            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a '.vhd' or '.vhdl' extension.",
+            "description": "VHDL language standard supported by all VHDL source files. VHDL files should have a `.vhd` or `.vhdl` extension.",
             "type": "object",
             "properties": {
                 "version": {
+                    "type": "string",
                     "enum": [
                         "1993",
                         "2000",
@@ -390,17 +431,18 @@
                 },
                 "synopsys": {
                     "type": "boolean",
-                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard IEEE libraries is STRONGLY discouraged!)",
+                    "description": "Use of non-standard Synopsys packages in IEEE namespace. (NOTE: The use of non-standard `IEEE` libraries is _strongly_ discouraged!)",
                     "default": false
                 }
             }
         },
         "verilog": {
             "title": "Verilog",
-            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a '.v' extension.",
+            "description": "Verilog language standard supported by all Verilog source files. Covers pre-SystemVerilog standards. Verilog files should have a `.v` extension.",
             "type": "object",
             "properties": {
                 "version": {
+                    "type": "string",
                     "enum": [
                         "1995",
                         "2001"
@@ -411,10 +453,11 @@
         },
         "systemverilog": {
             "title": "SystemVerilog",
-            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a '.sv' extension.",
+            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language standard supported by all SystemVerilog files. Verilog files should have a `.sv` extension.",
             "type": "object",
             "properties": {
                 "version": {
+                    "type": "string",
                     "enum": [
                         "2005",
                         "2009"
