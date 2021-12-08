@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://cryptography.gmu.edu/lwc.schema.json",
     "title": "Design",
-    "description": "Captures attributes of an LWC hardware implementations.",
+    "description": "Captures attributes of an LWC hardware implementation.",
     "type": "object",
     "properties": {
         "name": {
