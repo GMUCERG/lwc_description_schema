@@ -21,6 +21,7 @@ rtl:
     port: reset
     active_high: true
     synchronous: true
+    asynchronous: false
 lwc:
   algorithm: myaead128v2
   pt_block_bits: 128
@@ -36,12 +37,12 @@ lwc:
       bit_width: 32
       num_shares: 3
   sca_protection:
-    attacks:
+    target:
     - timing
     - sda
     - dpa
-    dpa_order: 1
-  pdi_order:
+    order: 1
+  input_sequence:
     encrypt:
     - npub
     - ad

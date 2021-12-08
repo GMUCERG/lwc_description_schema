@@ -47,14 +47,14 @@
             }
         },
         "sca_protection": {
-            "attacks": [
+            "target": [
                 "timing",
                 "sda",
                 "dpa"
             ],
-            "dpa_order": 1
+            "order": 1
         },
-        "pdi_order": {
+        "input_sequence": {
             "encrypt": [
                 "npub",
                 "ad",
