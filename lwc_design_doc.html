@@ -1,82 +1,82 @@
-<p><strong><em><code>Design</code></em></strong>: Captures attributes of an LWC hardware implementations to enable automated benchmarking and validation.  Cannot contain additional properties.
-- <strong><em><code>name</code></em></strong> <em>(string)</em>: A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter. 
-- <strong><code>description</code></strong> <em>(string)</em>: A short description of the design. 
-- <strong><code>author</code></strong> <em>(string or array of string)</em>: Author or list of authors and developers who have contributed to this implementation. 
-- <strong><code>url</code></strong> <em>(string)</em>: Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s). 
-- <strong><code>license</code></strong> <em>(string or array of string)</em>: License or licenses covering this design's use and distribution. Use SPDX (ISO/IEC 5962:2021) short identifiers when applicable. 
+<p><strong>Design</strong>: Captures attributes of an LWC hardware implementation. 
+- <strong>name</strong> <em>(string)</em>: A unique identifier for the design. It can consist of English letters, digits, dashes, and underscores and must start with a letter. 
+- <strong>description</strong> <em>(string)</em>: A short description of the design. 
+- <strong>author</strong> <em>(string or array of string)</em>: Author or list of authors and developers who have contributed to this implementation. 
+- <strong>url</strong> <em>(string)</em>: Uniform Resource Locator pointing to a webpage or source repository associated with this design or its author(s). 
+- <strong>license</strong> <em>(string or array of string)</em>: License or licenses covering this design's use and distribution. Use SPDX (ISO/IEC 5962:2021) short identifiers when applicable. 
     <em>Examples:</em>
         <code>"SHL-2.1"</code>
-- <strong><code>version</code></strong> <em>(string)</em>: Design version. 
+- <strong>version</strong> <em>(string)</em>: Design version. 
     <em>Examples:</em>
         <code>"0.0.1"</code>
-- <strong><em><code>rtl</code></em></strong>: Details of the synthesizable RTL design.  Cannot contain additional properties.
-    - <strong><em><code>sources</code></em></strong> <em>(array of string)</em>: Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. 
-    - <strong><code>includes</code></strong> <em>(array of string)</em>: Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.    <em>Default:</em> <code>[]</code> 
-    - <strong><em><code>top</code></em></strong> <em>(string)</em>: Name of top-level RTL entity/module.    <em>Default:</em> <code>LWC</code> 
-    - <strong><code>clock</code></strong>: Top level RTL clock signal. Only a single clock is supported by LWC API. 
-        - <strong><code>port</code></strong> <em>(string)</em>: Name of the top-level RTL clock input.    <em>Default:</em> <code>clk</code> 
-    - <strong><code>reset</code></strong>: Top level reset signal. Only a single reset is supported by LWC API. 
-        - <strong><code>port</code></strong> <em>(string)</em>: Name of top-level RTL reset input.    <em>Default:</em> <code>reset</code> 
-        - <strong><code>active_high</code></strong> <em>(boolean)</em>: Polarity of the reset signal. Active-high (positive) if true, otherwise active-low.    <em>Default:</em> <code>true</code> 
-        - <strong><code>asynchronous</code></strong> <em>(boolean)</em>: Whether reset is asynchronous with respect to <code>rtl.clock</code>.    <em>Default:</em> <code>false</code> 
-    - <strong><code>parameters</code></strong>: Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values. 
+- <strong>rtl</strong>: Details of the synthesizable RTL design. 
+    - <strong>sources</strong> <em>(array of string)</em>: Non-empty list of HDL source file paths in correct compilation order. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces. HDL language is inferred from the file extension. 
+    - <strong>includes</strong> <em>(array of string)</em>: Non-empty list of HDL include file paths, such as Verilog headers. Include files are not directly compiled but need to be present for elaboration of design. Order is arbitrary. All paths must be relative to the location of the configuration file. Path separator is <code>/</code> (slash) on all platforms. Paths are case-sensitive and should not contain whitespaces.    <em>Default:</em> <code>[]</code> 
+    - <strong>top</strong> <em>(string)</em>: Name of top-level RTL entity/module.    <em>Default:</em> <code>LWC</code> 
+    - <strong>clock</strong>: Top level RTL clock signal. Only a single clock is supported by LWC API. 
+        - <strong>port</strong> <em>(string)</em>: Name of the top-level RTL clock input.    <em>Default:</em> <code>clk</code> 
+    - <strong>reset</strong>: Top level reset signal. Only a single reset is supported by LWC API. 
+        - <strong>port</strong> <em>(string)</em>: Name of top-level RTL reset input.    <em>Default:</em> <code>reset</code> 
+        - <strong>active<em>high</strong> *(boolean)*: Polarity of the reset signal. Active-high (positive) if true, otherwise active-low.    _Default:</em> <code>true</code> 
+        - <strong>asynchronous</strong> <em>(boolean)</em>: Whether reset is asynchronous with respect to <code>rtl.clock</code>.    <em>Default:</em> <code>false</code> 
+    - <strong>parameters</strong>: Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values. 
         <em>Examples:</em>
                 <code>{"G_NUM_SHARES": 2, "G_BACKDOOR": 0}</code>
-    - <strong><code>language</code></strong>: Information about Hardware Description/Design Language(s). 
-        - <strong><code>vhdl</code></strong>: Common VHDL features supported by all VHDL source files. VHDL files must have a <code>.vhd</code> or <code>.vhdl</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: VHDL language standard.    <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>    <em>Default:</em> <code>1993</code> 
-            - <strong><code>synopsys</code></strong> <em>(boolean)</em>: Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std<em>logic</em>arith'. Dependence on such packages is <em>strongly</em> discouraged.    <em>Default:</em> <code>false</code> 
-        - <strong><code>verilog</code></strong>: Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a <code>.v</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: Verilog language standard.    <em>Supported values:</em> <code>1995</code>, <code>2001</code>    <em>Default:</em> <code>2001</code> 
-        - <strong><code>systemverilog</code></strong>: SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a <code>.sv</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: SystemVerilog language standard.    <em>Supported values:</em> <code>2005</code>, <code>2009</code>    <em>Default:</em> <code>2009</code> 
-- <strong><code>tb</code></strong>: Details of test-bench used for verification of top-level design. [Optional].  Cannot contain additional properties.
-    - <strong><code>sources</code></strong> <em>(array of string)</em>: Source files used only for verification. Should <em>not</em> contain any of the files included in 'rtl.sources'. 
-    - <strong><code>includes</code></strong> <em>(array of string)</em>: HDL include file paths.    <em>Default:</em> <code>[]</code> 
-    - <strong><code>top</code></strong> <em>(string)</em>: Name of top-level test entity or module. 
-    - <strong><code>parameters</code></strong>: Testbench parameter or generics specified as a key-value map. The default value of each parameter is overridden by the simulator. For the best tool compatibility, we only support integer and string values. 
+    - <strong>language</strong>: Information about Hardware Description/Design Language(s). 
+        - <strong>vhdl</strong>: Common VHDL features supported by all VHDL source files. VHDL files must have a <code>.vhd</code> or <code>.vhdl</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: VHDL language standard.    <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>    <em>Default:</em> <code>1993</code> 
+            - <strong>synopsys</strong> <em>(boolean)</em>: Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std<em>logic</em>arith'. Dependence on such packages is <em>strongly</em> discouraged.    <em>Default:</em> <code>false</code> 
+        - <strong>verilog</strong>: Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a <code>.v</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: Verilog language standard.    <em>Supported values:</em> <code>1995</code>, <code>2001</code>    <em>Default:</em> <code>2001</code> 
+        - <strong>systemverilog</strong>: SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a <code>.sv</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: SystemVerilog language standard.    <em>Supported values:</em> <code>2005</code>, <code>2009</code>    <em>Default:</em> <code>2009</code> 
+- <strong>tb</strong>: Details of test-bench used for verification of top-level design. [Optional]. 
+    - <strong>sources</strong> <em>(array of string)</em>: Source files used only for verification. Should <em>not</em> contain any of the files included in 'rtl.sources'. 
+    - <strong>includes</strong> <em>(array of string)</em>: HDL include file paths.    <em>Default:</em> <code>[]</code> 
+    - <strong>top</strong> <em>(string)</em>: Name of top-level test entity or module. 
+    - <strong>parameters</strong>: Testbench parameter or generics specified as a key-value map. The default value of each parameter is overridden by the simulator. For the best tool compatibility, we only support integer and string values. 
         <em>Examples:</em>
                 <code>{"G_TEST_MODE": 0}</code>
-    - <strong><code>language</code></strong>: Information about HDL or programming languages used in the testbench. 
-        - <strong><code>vhdl</code></strong>: Common VHDL features supported by all VHDL source files. VHDL files must have a <code>.vhd</code> or <code>.vhdl</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: VHDL language standard.    <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>    <em>Default:</em> <code>1993</code> 
-            - <strong><code>synopsys</code></strong> <em>(boolean)</em>: Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std<em>logic</em>arith'. Dependence on such packages is <em>strongly</em> discouraged.    <em>Default:</em> <code>false</code> 
-        - <strong><code>verilog</code></strong>: Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a <code>.v</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: Verilog language standard.    <em>Supported values:</em> <code>1995</code>, <code>2001</code>    <em>Default:</em> <code>2001</code> 
-        - <strong><code>systemverilog</code></strong>: SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a <code>.sv</code> extension. 
-            - <strong><code>version</code></strong> <em>(string)</em>: SystemVerilog language standard.    <em>Supported values:</em> <code>2005</code>, <code>2009</code>    <em>Default:</em> <code>2009</code> 
-        - <strong><code>python</code></strong>
-            - <strong><code>version</code></strong> <em>(string)</em>
-            - <strong><code>framework</code></strong> <em>(string)</em>:   <em>Supported values:</em> <code>cocotb</code>    <em>Default:</em> <code>cocotb</code> 
-- <strong><em><code>lwc</code></em></strong>: LWC-specific meta-data. 
-    - <strong><em><code>algorithm</code></em></strong> <em>(string or array of string)</em>: LWC AEAD/Hash algorithm(s) supported by this design. Should follow <a href="https://bench.cr.yp.to/primitives-aead.html">SUPERCOP</a> naming conventions and uniquely identify the scheme's variant and version. In case of duplicates, the second instance indicates support for AEAD and Hash algorithms with the same name. 
+    - <strong>language</strong>: Information about HDL or programming languages used in the testbench. 
+        - <strong>vhdl</strong>: Common VHDL features supported by all VHDL source files. VHDL files must have a <code>.vhd</code> or <code>.vhdl</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: VHDL language standard.    <em>Supported values:</em> <code>1993</code>, <code>2000</code>, <code>2002</code>, <code>2008</code>    <em>Default:</em> <code>1993</code> 
+            - <strong>synopsys</strong> <em>(boolean)</em>: Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std<em>logic</em>arith'. Dependence on such packages is <em>strongly</em> discouraged.    <em>Default:</em> <code>false</code> 
+        - <strong>verilog</strong>: Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a <code>.v</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: Verilog language standard.    <em>Supported values:</em> <code>1995</code>, <code>2001</code>    <em>Default:</em> <code>2001</code> 
+        - <strong>systemverilog</strong>: SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a <code>.sv</code> extension. 
+            - <strong>version</strong> <em>(string)</em>: SystemVerilog language standard.    <em>Supported values:</em> <code>2005</code>, <code>2009</code>    <em>Default:</em> <code>2009</code> 
+        - <strong>python</strong>
+            - <strong>version</strong> <em>(string)</em>
+            - <strong>framework</strong> <em>(string)</em>:   <em>Supported values:</em> <code>cocotb</code>    <em>Default:</em> <code>cocotb</code> 
+- <strong>lwc</strong>: LWC-specific meta-data. 
+    - <strong>algorithm</strong> <em>(string or array of string)</em>: LWC AEAD/Hash algorithm(s) supported by this design. Should follow <a href="https://bench.cr.yp.to/primitives-aead.html">SUPERCOP</a> naming conventions and uniquely identify the scheme's variant and version. In case of duplicates, the second instance indicates support for AEAD and Hash algorithms with the same name. 
         <em>Examples:</em>
                 <code>["giftcofb128v1"]</code>, <code>["romulusn1v12"]</code>, <code>["gimli24v1", "gimli24v1"]</code>
-    - <strong><code>input_sequence</code></strong>: Order in which different input segment types should be fed to PDI. 
-        - <strong><code>encrypt</code></strong> <em>(array of string)</em>:   <em>Default:</em> <code>['npub', 'ad', 'pt', 'tag']</code> 
-        - <strong><code>decrypt</code></strong> <em>(array of string)</em>:   <em>Default:</em> <code>['npub', 'ad', 'ct', 'tag']</code> 
-    - <strong><em><code>pt_block_bits</code></em></strong> <em>(integer)</em>: Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics. 
-    - <strong><em><code>ad_block_bits</code></em></strong> <em>(integer)</em>: Algorithm's size of associated-data 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics. 
-    - <strong><code>key_bits</code></strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code> 
-    - <strong><code>npub_bits</code></strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code> 
-    - <strong><code>tag_bits</code></strong> <em>(integer)</em>:   <em>Default:</em> <code>128</code> 
-    - <strong><code>hash</code></strong>
-        - <strong><code>supported</code></strong> <em>(boolean)</em>: Whether this implementation supports hashing.    <em>Default:</em> <code>false</code> 
-        - <strong><code>digest_bits</code></strong> <em>(integer)</em>: Size of hash digest (output) in bits.    <em>Default:</em> <code>128</code> 
-    - <strong><em><code>ports</code></em></strong>: Description of LWC ports. 
-        - <strong><em><code>pdi</code></em></strong>: Public Data Input port. 
-            - <strong><code>bit_width</code></strong> <em>(integer)</em>: Width of each share of PDI data (bits). Width of 'pdi<em>data' signal would be <code>pdi.bit_width × pdi.num_shares</code> bits.    _Minimum:</em> <code>8</code>    <em>Maximum:</em> <code>32</code>    <em>Default:</em> <code>32</code> 
-            - <strong><code>num_shares</code></strong> <em>(integer)</em>: Number of PDI shares. Default is 1 (unprotected).    <em>Default:</em> <code>1</code> 
-        - <strong><code>sdi</code></strong>: Secret Data Input port. 
-            - <strong><code>bit_width</code></strong> <em>(integer)</em>: Width of each share of SDI data (bits). Width of <code>sdi_data</code> signal would be <code>sdi.bit_width × sdi.num_shares</code> bits.    <em>Minimum:</em> <code>8</code>    <em>Maximum:</em> <code>32</code>    <em>Default:</em> <code>32</code> 
-            - <strong><code>num_shares</code></strong> <em>(integer)</em>: Number of SDI shares. Default is the same as <code>pdi.num_shares</code>.    <em>Minimum:</em> <code>1</code>    <em>Default:</em> <code>1</code> 
-        - <strong><code>rdi</code></strong>: Random Data Input port. 
-            - <strong><code>bit_width</code></strong> <em>(integer)</em>:   <em>Minimum:</em> <code>0</code>    <em>Maximum:</em> <code>2048</code>    <em>Default:</em> <code>0</code> 
-    - <strong><em><code>sca_protection</code></em></strong>: Implemented countermeasures against side-channel attacks.  Cannot contain additional properties.
-        - <strong><code>target</code></strong> <em>(array of string)</em>: Type of side-channel analysis attack(s) against which this design is assumed to be secure. 
-            <em>Examples:</em>
+    - <strong>input<em>sequence</strong>: Order in which different input segment types should be fed to PDI. 
+        - <strong>encrypt</strong> *(array of string)*:   _Default:</em> <code>['npub', 'ad', 'pt', 'tag']</code> 
+        - <strong>decrypt</strong> <em>(array of string)</em>:   <em>Default:</em> <code>['npub', 'ad', 'ct', 'tag']</code> 
+    - <strong>pt<em>block</em>bits</strong> <em>(integer)</em>: Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics. 
+    - <strong>ad<em>block</em>bits</strong> <em>(integer)</em>: Algorithm's size of associated-data 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics. 
+    - <strong>key<em>bits</strong> *(integer)*:   _Default:</em> <code>128</code> 
+    - <strong>npub<em>bits</strong> *(integer)*:   _Default:</em> <code>128</code> 
+    - <strong>tag<em>bits</strong> *(integer)*:   _Default:</em> <code>128</code> 
+    - <strong>hash</strong>
+        - <strong>supported</strong> <em>(boolean)</em>: Whether this implementation supports hashing.    <em>Default:</em> <code>false</code> 
+        - <strong>digest<em>bits</strong> *(integer)*: Size of hash digest (output) in bits.    _Default:</em> <code>128</code> 
+    - <strong>ports</strong>: Description of LWC ports. 
+        - <strong>pdi</strong>: Public Data Input port. 
+            - <strong>bit<em>width</strong> *(integer)*: Width of each share of PDI data (bits). Width of 'pdi</em>data' signal would be <code>pdi.bit_width × pdi.num_shares</code> bits.    <em>Minimum:</em> <code>8</code>    <em>Maximum:</em> <code>32</code>    <em>Default:</em> <code>32</code> 
+            - <strong>num<em>shares</strong> *(integer)*: Number of PDI shares. Default is 1 (unprotected).    _Default:</em> <code>1</code> 
+        - <strong>sdi</strong>: Secret Data Input port. 
+            - <strong>bit<em>width</strong> *(integer)*: Width of each share of SDI data (bits). Width of <code>sdi_data</code> signal would be <code>sdi.bit_width × sdi.num_shares</code> bits.    _Minimum:</em> <code>8</code>    <em>Maximum:</em> <code>32</code>    <em>Default:</em> <code>32</code> 
+            - <strong>num<em>shares</strong> *(integer)*: Number of SDI shares.    _Minimum:</em> <code>1</code>    <em>Default:</em> <code>1</code> 
+        - <strong>rdi</strong>: Random Data Input port. 
+            - <strong>bit<em>width</strong> *(integer)*:   _Minimum:</em> <code>0</code>    <em>Maximum:</em> <code>2048</code>    <em>Default:</em> <code>0</code> 
+    - <strong>sca<em>protection</strong>: Implemented countermeasures against side-channel attacks. 
+        - <strong>target</strong> *(array of string)*: Type of side-channel analysis attack(s) against which this design is assumed to be secure. 
+            _Examples:</em>
                         <code>["spa", "dpa", "cpa", "timing"]</code>, <code>["dpa", "sifa", "dfia"]</code>
-        - <strong><code>masking_schemes</code></strong> <em>(array of string)</em>: Masking scheme(s) applied in this implementation. Could be name/abbreviation of established schemes (e.g., "DOM", "TI") or reference to a publication.    <em>Default:</em> <code>[]</code> 
+        - <strong>masking<em>schemes</strong> *(array of string)*: Masking scheme(s) applied in this implementation. Could be name/abbreviation of established schemes (e.g., "DOM", "TI") or reference to a publication.    _Default:</em> <code>[]</code> 
             <em>Examples:</em>
                         <code>["TI"]</code>, <code>["DOM", "https://eprint.iacr.org/2022/000.pdf"]</code>
-        - <strong><em><code>order</code></em></strong> <em>(integer)</em>: Claimed order of protectcion. 0 means unprotected.    <em>Default:</em> <code>0</code> </p>
+        - <strong>order</strong> <em>(integer)</em>: Claimed order of protectcion. 0 means unprotected.    <em>Default:</em> <code>0</code> </p>

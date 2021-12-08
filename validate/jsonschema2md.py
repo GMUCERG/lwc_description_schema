@@ -61,12 +61,12 @@ class Parser:
         if "enum" in obj:
             description_line.append(
                 f"  _Supported values:_ `{'`, `'.join(obj['enum'])}` ")
-        if "additionalProperties" in obj:
-            if obj["additionalProperties"]:
-                description_line.append("Can contain additional properties.")
-            else:
-                description_line.append(
-                    "Cannot contain additional properties.")
+        # if "additionalProperties" in obj:
+        #     if obj["additionalProperties"]:
+        #         description_line.append("Can contain additional properties.")
+        #     else:
+        #         description_line.append(
+        #             "Cannot contain additional properties.")
         if "default" in obj and obj['default'] != {}:
             default_value = obj['default']
             if isinstance(default_value, bool):
@@ -167,7 +167,7 @@ class Parser:
             # name = name.replace('_', '\\_')
             name_formatted = f"**`{name}`**" if name_monospace else f"**{name}**"
             if required:
-                name_formatted = f"***`{name}`***"
+                name_formatted = f"***`{name}`***" if name_monospace else f"**{name}**"
             pre = indentation + "- " if level >= 0 else ""
             output_lines.append(
                 f"{pre}{name_formatted}{obj_type}{description_line}\n"
@@ -223,7 +223,7 @@ class Parser:
         #         output_lines.append(f"## {name}:\n")
         #         for obj_name, obj in schema_object[key].items():
         #             output_lines.extend(self._parse_object(obj, obj_name))
-        output_lines.extend(self._parse_object(schema_object, schema_object.get('title', "Schema"), name_monospace=True, required=True))
+        output_lines.extend(self._parse_object(schema_object, schema_object.get('title', "Schema"), name_monospace=False, required=True))
 
         # Add examples
         # if "examples" in schema_object:

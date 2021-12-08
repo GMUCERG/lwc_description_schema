@@ -383,7 +383,7 @@
                                     "default": 32
                                 },
                                 "num_shares": {
-                                    "description": "Number of SDI shares. Default is the same as `pdi.num_shares`.",
+                                    "description": "Number of SDI shares.",
                                     "type": "integer",
                                     "minimum": 1,
                                     "default": 1
