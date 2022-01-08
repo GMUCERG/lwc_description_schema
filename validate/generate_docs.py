@@ -1,20 +1,28 @@
-"""Convert JSON Schema to Markdown documentation."""
-
-
-# Modified by Kamyar Mohajerani. All modifications are under Apache-2.0 license.
-__author__ = "Ralf Gabriels"
-__email__ = "ralfg@hotmail.be"
-__license__ = "Apache-2.0"
-
-
+#!/usr/bin/env python3
+#
+# Install dependencies before running this script:
+#  python3 -m pip install -U -r requirements.txt
+#
 import json
 import re
 from typing import Dict, Optional, Sequence, Any
-
 import io
 from functools import reduce
-__version__ = "0.3.0"
-
+import json
+from typing import Any, Dict, Mapping, OrderedDict, Type
+import jsonschema
+from jsonschema import Draft202012Validator, draft202012_format_checker, validators, RefResolver
+from enum import Enum, auto
+from pathlib import Path
+import toml
+from toml import ordered as toml_ordered
+import yaml
+import argparse
+from functools import reduce
+import json
+import re
+from typing import Dict, Optional, Sequence, Any
+import io
 
 def get_path(dct: Dict[str, Any], path, sep='/'):
     if isinstance(path, str):
@@ -24,18 +32,14 @@ def get_path(dct: Dict[str, Any], path, sep='/'):
     except:
         return None
 
+# Following borrowed from jsonschema2md.py
+# Original author: Ralf Gabriels (ralfg@hotmail.be)
+# License: Apache-2.0"
+# Modified by Kamyar Mohajerani. All modifications are under Apache-2.0 license.
+
+name_monospace: bool = True
 
 class Parser:
-    """
-    JSON Schema to Markdown parser.
-
-    Examples
-    --------
-    >>> import jsonschema2md
-    >>> parser = jsonschema2md.Parser()
-    >>> md_lines = parser.parse_schema(json.load(input_json))
-    """
-
     def __init__(self, schema_object, tab_size=4) -> None:
         self.schema_object = schema_object
         self.tab_size = tab_size
@@ -67,7 +71,7 @@ class Parser:
         #     else:
         #         description_line.append(
         #             "Cannot contain additional properties.")
-        if "default" in obj and obj['default'] != {}:
+        if "default" in obj:
             default_value = obj['default']
             if isinstance(default_value, bool):
                 default_value = str(default_value).lower()
@@ -108,7 +112,6 @@ class Parser:
         self,
         obj: Dict,
         name: str,
-        name_monospace: bool = False,
         output_lines: Optional[str] = None,
         level: int = -1,
         required: bool = True
@@ -193,7 +196,6 @@ class Parser:
                     property_name,
                     output_lines=output_lines,
                     level=level + 1,
-                    name_monospace=name_monospace,
                     required=required and (property_name in required_fields)
                 )
 
@@ -223,7 +225,7 @@ class Parser:
         #         output_lines.append(f"## {name}:\n")
         #         for obj_name, obj in schema_object[key].items():
         #             output_lines.extend(self._parse_object(obj, obj_name))
-        output_lines.extend(self._parse_object(schema_object, schema_object.get('title', "Schema"), name_monospace=False, required=True))
+        output_lines.extend(self._parse_object(schema_object, schema_object.get('title', "Schema"), required=True))
 
         # Add examples
         # if "examples" in schema_object:
@@ -235,6 +237,69 @@ class Parser:
         return output_lines
 
 
-# parser = Parser(json.load(input_json))
-# output_md = parser.generate_md()
-# output_markdown.writelines(output_md)
+#############################################
+# end of code borrowed from jsonschema2md.py
+#############################################
+
+
+parser = argparse.ArgumentParser(description='Validate LWC design files.')
+
+parser.add_argument('--schema-file', default="lwc.schema.json")
+
+
+parser.add_argument(
+    '--html', action='store_true')
+parser.add_argument(
+    '--markdown', action='store_true', default=True)
+
+args = parser.parse_args()
+
+with open(args.schema_file) as sf:
+    schema = json.load(sf)
+
+html_filename = "doc/lwc_design_doc.html"
+md_filename = "doc/lwc_design_doc.md"
+pdf_file_path = "doc/lwc_design_doc.pdf"
+
+if args.markdown:
+
+    # schema_doc_config = GenerationConfiguration(
+    #     # expand_buttons=True,
+    #     description_is_markdown=True,
+    #     with_footer=False,
+    #     # link_to_reused_ref = False,
+    #     show_toc = False,
+    #     template_name='md', # or "md_nested"
+    # )
+    # generate_from_filename(args.schema_file, filename, config=schema_doc_config)
+    parser = Parser(schema)
+    md_lines = parser.generate_md()
+    md_content = "".join(md_lines)
+    with open(md_filename, "w") as output_markdown:
+        output_markdown.write(md_content)
+
+    from markdown2 import markdown
+    md = markdown(md_content, extras=None)
+
+    # with open(html_filename, "w") as output_markdown:
+    #     output_markdown.write(md)
+
+    # from weasyprint import HTML, CSS
+    # html = HTML(string=md)
+    # css = []
+    # css.append(CSS(filename='validate/md.css'))
+    # html.write_pdf(pdf_file_path, stylesheets=css)
+
+if args.html:
+    from json_schema_for_humans.generate import generate_from_filename
+    from json_schema_for_humans.generation_configuration import GenerationConfiguration
+
+    schema_doc_config = GenerationConfiguration(
+        # expand_buttons=True,
+        description_is_markdown=True,
+        with_footer=False,
+        link_to_reused_ref=False,
+        template_name='js',  # or flat
+    )
+    generate_from_filename(args.schema_file, html_filename,
+                           config=schema_doc_config)

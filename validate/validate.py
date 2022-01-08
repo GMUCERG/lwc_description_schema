@@ -14,25 +14,34 @@ from toml import ordered as toml_ordered
 import yaml
 import argparse
 from functools import reduce
+import json
+import re
+from typing import Dict, Optional, Sequence, Any
 
 
-schema_file = "lwc.schema.json"
+def get_path(dct: Dict[str, Any], path, sep='/'):
+    if isinstance(path, str):
+        path = path.split(sep)
+    try:
+        return reduce(dict.__getitem__, path, dct)
+    except:
+        return None
 
 
 parser = argparse.ArgumentParser(description='Validate LWC design files.')
+
 parser.add_argument('design_file')
+
+parser.add_argument('--schema-file', default="lwc.schema.json")
 parser.add_argument(
     '--write-toml', type=str, default=None)
 parser.add_argument(
     '--write-json', type=str, default=None)
 parser.add_argument(
     '--write-yaml', type=str, default=None)
-parser.add_argument(
-    '--with-defaults', action='store_true')
-parser.add_argument(
-    '--gen-html-doc', action='store_true')
-parser.add_argument(
-    '--gen-md-doc', action='store_true')
+# parser.add_argument(
+#     '--with-defaults', action='store_true', default=False)
+
 parser.add_argument(
     '--check-paths', action='store_true')
 
@@ -58,56 +67,8 @@ else:
     raise Exception("unknown design file extension")
 
 
-with open(schema_file) as sf:
+with open(args.schema_file) as sf:
     schema = json.load(sf)
-
-if args.gen_md_doc:
-    try:
-        from .validate.jsonschema2md import Parser
-    except:
-        from validate.jsonschema2md import Parser
-    filename = "lwc_design_doc.md"
-    # schema_doc_config = GenerationConfiguration(
-    #     # expand_buttons=True,
-    #     description_is_markdown=True,
-    #     with_footer=False,
-    #     # link_to_reused_ref = False,
-    #     show_toc = False,
-    #     template_name='md', # or "md_nested"
-    # )
-    # generate_from_filename(schema_file, filename, config=schema_doc_config)
-    parser = Parser(schema)
-    md_lines = parser.generate_md()
-    md_content = "".join(md_lines)
-    with open(filename, "w") as output_markdown:
-        output_markdown.write(md_content)
-    pdf_file_path = "lwc_design_doc.pdf"
-
-    from markdown2 import markdown
-    md = markdown(md_content, extras = None)
-    
-    with open("lwc_design_doc.html", "w") as output_markdown:
-        output_markdown.write(md)
-
-    from weasyprint import HTML, CSS
-    html = HTML(string=md)
-    css = []
-    css.append(CSS(filename='validate/md.css'))
-    html.write_pdf(pdf_file_path, stylesheets=css)
-
-if args.gen_html_doc:
-    filename = "lwc.schema.html"
-    from json_schema_for_humans.generate import generate_from_filename
-    from json_schema_for_humans.generation_configuration import GenerationConfiguration
-
-    schema_doc_config = GenerationConfiguration(
-        # expand_buttons=True,
-        description_is_markdown=True,
-        with_footer=False,
-        link_to_reused_ref=False,
-        template_name='js',  # or flat
-    )
-    generate_from_filename(schema_file, filename, config=schema_doc_config)
 
 
 with open(design_file_path) as df:
@@ -118,10 +79,11 @@ with open(design_file_path) as df:
     elif design_file_type == DesignFileType.YAML:
         design = yaml.load(df, Loader=yaml.Loader)
 
+
 def all_required(schem, k=None):
     t = schem.get('type')
     if t is None:
-        print(f"{k} has no type")
+        print(f"[WARNING] {k} has no type")
         return
     if t != "object":
         return
@@ -131,14 +93,14 @@ def all_required(schem, k=None):
 
     prop = schem.get('properties')
     if prop is None:
-        print(f"{k} has no properties")
+        print(f"[WARNING] {k} has no properties")
         return
     for k, v in prop.items():
         # print(f"k={k}")
         if v.get("optional"):
             continue
         schem['required'].append(k)
-        all_required(v,k)
+        all_required(v, k)
 
 
 def extend_with_default(validator_class):
@@ -160,11 +122,12 @@ def extend_with_default(validator_class):
         validator_class, {"properties": set_defaults},
     )
 
+
 all_required(schema)
 # print(schema)
 
-validator = extend_with_default(
-    Draft202012Validator) if args.with_defaults else Draft202012Validator
+# if args.with_defaults else Draft202012Validator
+validator = extend_with_default(Draft202012Validator)
 
 resolver = RefResolver.from_schema(schema)
 
@@ -173,8 +136,9 @@ default_reference = validator(
 
 failed = False
 for error in sorted(default_reference.iter_errors(design), key=str):
-    print(error)
-    # print(f"[ERROR] {'.'.join(str(error.path))}: {error.message}")
+    # print(error)
+    error_path = " → ".join([str(e) for e in error.path])
+    print(f"[ERROR]\n    {error_path}: \n    {error.message}\n")
     failed = True
 if failed:
     print("Design file is INVALID")
@@ -202,7 +166,7 @@ def set_path(dct: Dict[str, Any], path, value, sep='.'):
         set_path(dct[k], path[1:], value, sep)
 
 
-## add missing properties from other properties
+# add missing properties from other properties
 # defaults = {
 #     'lwc.ports.sdi.bit_width': 'lwc.ports.pdi.bit_width',
 #     'lwc.ports.sdi.num_shares': 'lwc.ports.pdi.num_shares',
@@ -231,7 +195,7 @@ assert (get_path(design, 'lwc.sca_protection.order') > 0) == (
     get_path(design, 'lwc.ports.pdi.num_shares') > 1) == (get_path(design, 'lwc.ports.pdi.num_shares') > 1)
 
 
-print("Design file is VALID")
+print("\nDesign file is VALID    \n")
 
 if args.write_toml:
     with open(args.write_toml, "w") as tf:
@@ -247,7 +211,7 @@ if args.write_json:
     with open(args.write_json, "w") as tf:
         json.dump(design, tf, sort_keys=False, indent=4)
 
-# 
+#
 # \emph{\textbf{\texttt{ -> \uline{\textbf{\texttt{
 # \setlist[itemize]{label={\tiny$\bullet$}, leftmargin = *}
 # \begin{itemize}[

@@ -17,7 +17,7 @@
             "type": "string"
         },
         "author": {
-            "description": "Author or list of authors and developers who have contributed to this implementation.",
+            "description": "The name(s) of the developer(s) of this implementation.",
             "type": [
                 "string",
                 "array"
@@ -55,7 +55,7 @@
         },
         "rtl": {
             "title": "RTL",
-            "description": "Details of the synthesizable RTL design",
+            "description": "Details of the synthesizable RTL code",
             "type": "object",
             "properties": {
                 "sources": {
@@ -84,20 +84,19 @@
                     "description": "Top level RTL clock signal. Only a single clock is supported by LWC API",
                     "type": "object",
                     "properties": {
-                        "port": {
-                            "description": "Name of the top-level RTL clock input.",
+                        "pin": {
+                            "description": "Name of the top-level clock input.",
                             "type": "string",
                             "default": "clk"
                         }
-                    },
-                    "default": {}
+                    }
                 },
                 "reset": {
                     "description": "Top level reset signal. Only a single reset is supported by LWC API.",
                     "type": "object",
                     "properties": {
-                        "port": {
-                            "description": "Name of top-level RTL reset input.",
+                        "pin": {
+                            "description": "Name of top-level reset input.",
                             "type": "string",
                             "default": "reset"
                         },
@@ -111,12 +110,12 @@
                             "type": "boolean",
                             "default": false
                         }
-                    },
-                    "default": {}
+                    }
                 },
                 "parameters": {
                     "description": "Top-level design parameters or generics specified as a key-value map. The default value of each parameter is overridden by synthesis tool, simulator, testbench, or wrapper. For the best tool compatibility, we only support integer and string values.",
                     "type": "object",
+                    "properties": {},
                     "patternProperties": {
                         ".+": {
                             "type": [
@@ -128,26 +127,9 @@
                     "examples": [
                         {
                             "G_NUM_SHARES": 2,
-                            "G_BACKDOOR": 0
+                            "G_PARALLEL": 8
                         }
-                    ]
-                },
-                "language": {
-                    "title": "Design Languages",
-                    "description": "Information about Hardware Description/Design Language(s).",
-                    "type": "object",
-                    "properties": {
-                        "vhdl": {
-                            "$ref": "#/$defs/vhdl"
-                        },
-                        "verilog": {
-                            "$ref": "#/$defs/verilog"
-                        },
-                        "systemverilog": {
-                            "$ref": "#/$defs/systemverilog"
-                        }
-                    },
-                    "optional": true,
+                    ],
                     "default": {}
                 }
             },
@@ -198,39 +180,8 @@
                         {
                             "G_TEST_MODE": 0
                         }
-                    ]
-                },
-                "language": {
-                    "title": "Verification Languages",
-                    "description": "Information about HDL or programming languages used in the testbench.",
-                    "type": "object",
-                    "properties": {
-                        "vhdl": {
-                            "$ref": "#/$defs/vhdl"
-                        },
-                        "verilog": {
-                            "$ref": "#/$defs/verilog"
-                        },
-                        "systemverilog": {
-                            "$ref": "#/$defs/systemverilog"
-                        },
-                        "python": {
-                            "type": "object",
-                            "properties": {
-                                "version": {
-                                    "type": "string"
-                                },
-                                "framework": {
-                                    "type": "string",
-                                    "enum": [
-                                        "cocotb"
-                                    ],
-                                    "default": "cocotb"
-                                }
-                            }
-                        }
-                    },
-                    "optional": true
+                    ],
+                    "default": {}
                 }
             },
             "required": [
@@ -240,114 +191,175 @@
             "additionalProperties": false,
             "optional": true
         },
+        "language": {
+            "title": "Languages",
+            "description": "Information about Hardware Description/Design Language(s) used.",
+            "type": "object",
+            "properties": {
+                "vhdl": {
+                    "title": "VHDL",
+                    "description": "Common VHDL features supported by all VHDL source files. VHDL files must have a `.vhd` or `.vhdl` extension.",
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "description": "VHDL language standard",
+                            "type": "string",
+                            "enum": [
+                                "1993",
+                                "2000",
+                                "2002",
+                                "2008"
+                            ],
+                            "default": "1993"
+                        },
+                        "synopsys": {
+                            "type": "boolean",
+                            "description": "Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std_logic_arith'. Dependence on such packages is _strongly_ discouraged.",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "verilog": {
+                    "title": "Verilog",
+                    "description": "Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a `.v` extension.",
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "description": "Verilog language standard",
+                            "type": "string",
+                            "enum": [
+                                "1995",
+                                "2001"
+                            ],
+                            "default": "2001"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "systemverilog": {
+                    "title": "SystemVerilog",
+                    "description": "SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a `.sv` extension.",
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "description": "SystemVerilog language standard",
+                            "type": "string",
+                            "enum": [
+                                "2005",
+                                "2009"
+                            ],
+                            "default": "2009"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
         "lwc": {
             "title": "LWC",
             "description": "LWC-specific meta-data",
             "type": "object",
             "properties": {
-                "algorithm": {
-                    "description": "LWC AEAD/Hash algorithm(s) supported by this design. Should follow [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) naming conventions and uniquely identify the scheme's variant and version. In case of duplicates, the second instance indicates support for AEAD and Hash algorithms with the same name.",
-                    "type": [
-                        "string",
-                        "array"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "examples": [
-                        [
-                            "giftcofb128v1"
-                        ],
-                        [
-                            "romulusn1v12"
-                        ],
-                        [
-                            "gimli24v1",
-                            "gimli24v1"
-                        ]
-                    ]
-                },
-                "input_sequence": {
-                    "description": "Order in which different input segment types should be fed to PDI.",
+                "aead": {
+                    "description": "Details about the AEAD scheme and its implementation",
                     "type": "object",
                     "properties": {
-                        "encrypt": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "ad",
-                                    "pt",
-                                    "npub",
-                                    "tag"
-                                ]
-                            },
-                            "default": [
-                                "npub",
-                                "ad",
-                                "pt",
-                                "tag"
+                        "algorithm": {
+                            "description": "Name of the implemented AEAD algorithm based on [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) convention",
+                            "type": [
+                                "string"
+                            ],
+                            "examples": [
+                                "giftcofb128v1",
+                                "romulusn1v12",
+                                "gimli24v1"
                             ]
                         },
-                        "decrypt": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "ad",
-                                    "ct",
-                                    "npub",
-                                    "tag"
-                                ]
+                        "input_sequence": {
+                            "description": "Order in which different input segment types should be fed to PDI.",
+                            "type": "object",
+                            "properties": {
+                                "encrypt": {
+                                    "description": "Sequence of inputs during encryption",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ad",
+                                            "pt",
+                                            "npub",
+                                            "tag"
+                                        ]
+                                    },
+                                    "default": [
+                                        "npub",
+                                        "ad",
+                                        "pt",
+                                        "tag"
+                                    ]
+                                },
+                                "decrypt": {
+                                    "description": "Sequence of inputs during decryption",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ad",
+                                            "ct",
+                                            "npub",
+                                            "tag"
+                                        ]
+                                    },
+                                    "default": [
+                                        "npub",
+                                        "ad",
+                                        "ct",
+                                        "tag"
+                                    ]
+                                }
                             },
-                            "default": [
-                                "npub",
-                                "ad",
-                                "ct",
-                                "tag"
-                            ]
+                            "required": []
                         }
                     },
-                    "default": {},
-                    "required": [
-                        "encrypt",
-                        "decrypt"
-                    ]
-                },
-                "pt_block_bits": {
-                    "description": "Algorithm's size of plaintext/ciphertext 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics.",
-                    "type": "integer"
-                },
-                "ad_block_bits": {
-                    "description": "Algorithm's size of associated-data 'blocks' in bits. This is the number of bits that the algorithm operates upon during its basic operations. Potentially used for the evaluation of some performance metrics.",
-                    "type": "integer"
-                },
-                "key_bits": {
-                    "type": "integer",
-                    "default": 128
-                },
-                "npub_bits": {
-                    "type": "integer",
-                    "default": 128
-                },
-                "tag_bits": {
-                    "type": "integer",
-                    "default": 128
+                    "key_bits": {
+                        "description": "Size of key in bits.",
+                        "type": "integer",
+                        "default": 128
+                    },
+                    "npub_bits": {
+                        "description": "Size of public nonce in bits.",
+                        "type": "integer",
+                        "default": 128
+                    },
+                    "tag_bits": {
+                        "description": "Size of tag in bits.",
+                        "type": "integer",
+                        "default": 128
+                    },
+                    "additionalProperties": false
                 },
                 "hash": {
                     "type": "object",
                     "properties": {
-                        "supported": {
-                            "description": "Whether this implementation supports hashing.",
-                            "type": "boolean",
-                            "default": false
+                        "algorithm": {
+                            "description": "Name of the hashing algorithm based on [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) convention. Empty string if hashing is not supported",
+                            "type": [
+                                "string"
+                            ],
+                            "examples": [
+                                "",
+                                "gimli24v1"
+                            ],
+                            "default": ""
                         },
                         "digest_bits": {
                             "description": "Size of hash digest (output) in bits.",
                             "type": "integer",
                             "default": 128
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 "ports": {
                     "type": "object",
@@ -358,37 +370,40 @@
                             "type": "object",
                             "properties": {
                                 "bit_width": {
-                                    "description": "Width of each share of PDI data (bits). Width of 'pdi_data' signal would be `pdi.bit_width × pdi.num_shares` bits.",
+                                    "description": "Width of each word of PDI data in bits (`w`). The width of 'pdi_data' signal would be `pdi.bit_width × pdi.num_shares` (`w × n`) bits.",
                                     "type": "integer",
                                     "minimum": 8,
                                     "maximum": 32,
                                     "default": 32
                                 },
                                 "num_shares": {
-                                    "description": "Number of PDI shares. Default is 1 (unprotected).",
-                                    "type": "integer",
-                                    "default": 1
+                                    "description": "Number of PDI shares (`n`)",
+                                    "type": "integer"
                                 }
-                            }
+                            },
+                            "required": [
+                                "num_shares"
+                            ]
                         },
                         "sdi": {
                             "description": "Secret Data Input port",
                             "type": "object",
                             "properties": {
                                 "bit_width": {
-                                    "description": "Width of each share of SDI data (bits). Width of `sdi_data` signal would be `sdi.bit_width × sdi.num_shares` bits.",
+                                    "description": "Width of each word of SDI data in bits (`sw`). The width of `sdi_data` signal would be `sdi.bit_width × sdi.num_shares` (`sw × sn`) bits.",
                                     "type": "integer",
                                     "minimum": 8,
                                     "maximum": 32,
                                     "default": 32
                                 },
                                 "num_shares": {
-                                    "description": "Number of SDI shares.",
-                                    "type": "integer",
-                                    "minimum": 1,
-                                    "default": 1
+                                    "description": "Number of SDI shares (`sn`)",
+                                    "type": "integer"
                                 }
-                            }
+                            },
+                            "required": [
+                                "num_shares"
+                            ]
                         },
                         "rdi": {
                             "description": "Random Data Input port.",
@@ -397,16 +412,20 @@
                                 "bit_width": {
                                     "type": "integer",
                                     "minimum": 0,
-                                    "maximum": 2048,
-                                    "default": 0
+                                    "maximum": 2048
                                 }
-                            }
+                            },
+                            "required": [
+                                "bit_width"
+                            ]
                         }
                     },
                     "required": [
-                        "pdi"
+                        "pdi",
+                        "sdi",
+                        "rdi"
                     ],
-                    "default": {}
+                    "additionalProperties": false
                 },
                 "sca_protection": {
                     "type": "object",
@@ -458,16 +477,16 @@
                     "additionalProperties": false,
                     "required": [
                         "order"
-                    ]
+                    ],
+                    "additionalProperties": false
                 }
             },
             "required": [
                 "algorithm",
                 "ports",
-                "pt_block_bits",
-                "ad_block_bits",
                 "sca_protection"
-            ]
+            ],
+            "additionalProperties": false
         }
     },
     "$defs": {
@@ -477,65 +496,14 @@
                 "object"
             ],
             "pattern": "^[-\\w\\.]+(/[-\\w\\.]+)*$"
-        },
-        "vhdl": {
-            "title": "VHDL",
-            "description": "Common VHDL features supported by all VHDL source files. VHDL files must have a `.vhd` or `.vhdl` extension.",
-            "type": "object",
-            "properties": {
-                "version": {
-                    "description": "VHDL language standard",
-                    "type": "string",
-                    "enum": [
-                        "1993",
-                        "2000",
-                        "2002",
-                        "2008"
-                    ],
-                    "default": "1993"
-                },
-                "synopsys": {
-                    "type": "boolean",
-                    "description": "Use of non-standard Synopsys packages which were placed in the IEEE namespace, e.g. 'std_logic_arith'. Dependence on such packages is _strongly_ discouraged.",
-                    "default": false
-                }
-            }
-        },
-        "verilog": {
-            "title": "Verilog",
-            "description": "Common Verilog (pre-SystemVerilog) language features supported by all Verilog source files. Verilog files must have a `.v` extension.",
-            "type": "object",
-            "properties": {
-                "version": {
-                    "description": "Verilog language standard",
-                    "type": "string",
-                    "enum": [
-                        "1995",
-                        "2001"
-                    ],
-                    "default": "2001"
-                }
-            }
-        },
-        "systemverilog": {
-            "title": "SystemVerilog",
-            "description": "SystemVerilog (IEEE 1800-2005 and onwards) language features supported by all SystemVerilog source files. SystemVerilog files must have a `.sv` extension.",
-            "type": "object",
-            "properties": {
-                "version": {
-                    "description": "SystemVerilog language standard",
-                    "type": "string",
-                    "enum": [
-                        "2005",
-                        "2009"
-                    ],
-                    "default": "2009"
-                }
-            }
         }
     },
     "required": [
         "name",
+        "description",
+        "author",
+        "url",
+        "license",
         "rtl",
         "lwc"
     ],
