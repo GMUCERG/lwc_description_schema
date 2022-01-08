@@ -3,7 +3,7 @@
 ## Schema
 The structure of LWC design file is described as a [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-core.html) in the file `lwc.schema.json`. 
 
-The schema contains the hierarchy of design properties and their types, format, etc. The schema can be used to validate design files in `TOML`, 'JSON', or 'YAML' format (see Validation).
+The schema contains the hierarchy of design properties and their types, format, etc. The schema can be used to validate design files in `TOML`, `JSON`, or `YAML` format (see Validation).
 This schema also includes description of the data fields and is used to generate the human-readable documentation.
 
 ## Examples
