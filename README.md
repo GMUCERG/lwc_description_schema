@@ -1,19 +1,17 @@
-# LWC submission format
+# Variant description file for Protected LWC Hardware Implementations
+A _variant description file_ is a [TOML](https://toml.io/en/) file describing the details of an LWC protected hardware implementation. As suggested in the "Call for Protected Hardware Implementation", a _variant description file_ serves as an organized container of information and meta-data required for automated evaluation of an LWC hardware implementation.
 
 ## Schema
-The structure of LWC design file is described as a [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-core.html) in the file `lwc.schema.json`. 
-
-The schema contains the hierarchy of design properties and their types, format, etc. The schema can be used to validate design files in `TOML`, 'JSON', or 'YAML' format (see Validation).
-This schema also includes description of the data fields and is used to generate the human-readable documentation.
+The structure of a LWC _variant description file_ is described as a [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-core.html) in the file `lwc.schema.json`. 
+The schema provides a precise specification of the hierarchy as well as type, format, and description of the data fields. 
 
 ## Examples
-Example design files are provided in the [examples](./examples) directory.
+Example variant description files are provided in the [examples](./examples) subfolder.
 
 `examples/TinyJAMBU_DOM/tinyjambu-dom1-v1.toml`
 
 ## Validation
-A Python script is provided to assist validation of design files.
-
+A Python script is provided to assist validation of a _variant description file_.
 Requires: Python 3.7+
 
 Install dependencies:
@@ -21,16 +19,20 @@ Install dependencies:
 $ python3 -m pip install -U -r validate/requirements.txt
 ```
 
-
 Usage:
 ```
-./validate/validate.py --help 
+$ python3 ./validate/validate.py --help 
 ```
 
-Validating a design file:
+Validating a variant description file:
 ```
-./validate/validate.py examples/TinyJAMBU_DOM/tinyjambu-dom1-v1.toml
+$ python3 ./validate/validate.py <path-to-variant-description-file>
+```
+
+for example:
+```
+$ python3 ./validate/validate.py examples/TinyJAMBU_DOM/tinyjambu-dom1-v1.toml
 ```
 
 ## Documentation
-Human-readable documentation in PDF, HTML, and Markdown format is availale in [schema_doc](./schema_doc) folder.
+Human-readable documentation in PDF, HTML, and Markdown format is availale in the [doc](./doc) subfolder.
