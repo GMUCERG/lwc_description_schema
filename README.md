@@ -35,4 +35,4 @@ $ python3 ./validate/validate.py examples/TinyJAMBU_DOM/tinyjambu-dom1-v1.toml
 ```
 
 ## Documentation
-Human-readable documentation in PDF, HTML, and Markdown format is availale in the [doc](./doc) subfolder.
+Human-readable documentation in Markdown and HTML format is availale in the [doc](./doc) subfolder.
