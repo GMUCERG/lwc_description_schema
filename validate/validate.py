@@ -23,6 +23,12 @@ try:
 except:
     console = None
 
+def dump_data(design):
+    if console:
+        console.print_json(data=design)
+    else:
+        print(json.dumps(design, sort_keys=False, indent=2))
+
 VALIDATE_ROOT = Path(__file__).parent.absolute()
 
 log = getLogger(__name__)
@@ -41,6 +47,18 @@ def get_path(dct: Dict[str, Any], path, sep='.'):
             e.args[0], ".".join(path)
         )
         return None
+
+
+def set_path(dct: Dict[str, Any], path, value, sep='.'):
+    if isinstance(path, str):
+        path = path.split(sep)
+    k = path[0]
+    if len(path) == 1:
+        dct[k] = value
+    else:
+        if k not in dct:
+            dct[k] = {}
+        set_path(dct[k], path[1:], value, sep)
 
 
 parser = argparse.ArgumentParser(description='Validate LWC design files.')
@@ -149,21 +167,13 @@ for error in sorted(default_reference.iter_errors(design), key=str):
     error_path = " → ".join([str(e) for e in error.path])
     print(f"[ERROR]\n    {error_path}: \n    {error.message}\n")
     failed = True
+
+if args.verbose:
+    dump_data(design)
+
 if failed:
     print("Design file is INVALID")
     exit(1)
-
-
-def set_path(dct: Dict[str, Any], path, value, sep='.'):
-    if isinstance(path, str):
-        path = path.split(sep)
-    k = path[0]
-    if len(path) == 1:
-        dct[k] = value
-    else:
-        if k not in dct:
-            dct[k] = {}
-        set_path(dct[k], path[1:], value, sep)
 
 
 # add missing properties from other properties
@@ -180,20 +190,24 @@ def set_path(dct: Dict[str, Any], path, value, sep='.'):
 #             set_path(design, k, default_value)
 
 if args.check_paths:
-    for files in [design['rtl']['sources'], design.get('rtl', {}).get('includes', []), design.get('tb', {}).get('sources', []), design.get('tb', {}).get('includes', []), ]:
-        for f in files:
-            path = Path(f)
-            assert path.exists(), f"file {path} does not exist."
-            assert path.is_file(), f"{path} is not a regular file."
+    for p in ['rtl', 'tb']:
+        x = design.get(p, {})
+        for files in [x.get('sources', []), x.get('includes', [])]:
+            for f in files:
+                path = Path(f)
+                assert path.exists(), f"file {path} does not exist."
+                assert path.is_file(), f"{path} is not a regular file."
 
-if args.verbose:
-    if console:
-        console.print_json(data=design)
-
-if failed:
-    print("Design file is INVALID")
-    exit(1)
-
+for p in ['rtl', 'tb']:
+    x = design.get(p, {})
+    params = x.get('parameters', {})
+    if params and args.verbose:
+        print(f"design.{p}.parameters:")
+        dump_data(params)
+    for p_name, p_data in params.items():
+        if p_data and isinstance(p_data, dict):
+            assert all(isinstance(k, str) and isinstance(v, str) and k == 'file'
+                       for k, v in p_data.items()), f"Unsupported dict format in design.{p}.parameters.{p_name}"
 
 assert (get_path(design, 'lwc.sca_protection.order') > 0) == (
     get_path(design, 'lwc.ports.pdi.num_shares') > 1) == (get_path(design, 'lwc.ports.pdi.num_shares') > 1)
