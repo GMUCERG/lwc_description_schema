@@ -42,6 +42,9 @@
         - **`algorithm`** *(string)*: Name of the implemented AEAD algorithm based on [SUPERCOP](https://bench.cr.yp.to/primitives-aead.html) convention. 
             _Examples:_
                         `"giftcofb128v1"`, `"romulusn1v12"`, `"gimli24v1"`
+        - **`key_bits`** *(integer)*: Size of key in bits.    _Default:_ `128` 
+        - **`npub_bits`** *(integer)*: Size of public nonce in bits.    _Default:_ `128` 
+        - **`tag_bits`** *(integer)*: Size of tag in bits.    _Default:_ `128` 
         - **`input_sequence`**: Order in which different input segment types should be fed to PDI. 
             - **`encrypt`** *(array of string)*: Sequence of inputs during encryption.    _Default:_ `['npub', 'ad', 'pt', 'tag']` 
             - **`decrypt`** *(array of string)*: Sequence of inputs during decryption.    _Default:_ `['npub', 'ad', 'ct', 'tag']` 
@@ -58,7 +61,7 @@
             - **`bit_width`** *(integer)*: Width of each word of SDI data in bits (`sw`). The width of `sdi_data` signal would be `sdi.bit_width × sdi.num_shares` (`sw × sn`) bits.    _Minimum:_ `8`    _Maximum:_ `32`    _Default:_ `32` 
             - ***`num_shares`*** *(integer)*: Number of SDI shares (`sn`). 
         - ***`rdi`***: Random Data Input port. 
-            - ***`bit_width`*** *(integer)*:   _Minimum:_ `0`    _Maximum:_ `2048` 
+            - ***`bit_width`*** *(integer)*: Width of the `rdi` port in bits (`rw`), 0 if the port is not used.    _Minimum:_ `0`    _Maximum:_ `2048` 
     - ***`sca_protection`***: Implemented countermeasures against side-channel attacks. 
         - **`target`** *(array of string)*: Type of side-channel analysis attack(s) against which this design is assumed to be secure. 
             _Examples:_
@@ -67,3 +70,4 @@
             _Examples:_
                         `["TI"]`, `["DOM", "https://eprint.iacr.org/2022/000.pdf"]`
         - ***`order`*** *(integer)*: Claimed order of protectcion. 0 means unprotected.    _Default:_ `0` 
+        - **`notes`** *(string or array of string)*: Additional notes or comments on the claimed SCA protection.    _Default:_ `[]` 

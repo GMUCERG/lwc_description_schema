@@ -4,46 +4,55 @@
 #  python3 -m pip install -U -r requirements.txt
 #
 import json
-from typing import Any, Dict, Mapping, OrderedDict, Type
-import jsonschema
+from logging import getLogger
+import logging
+from typing import Any, Dict, OrderedDict, Optional
 from jsonschema import Draft202012Validator, draft202012_format_checker, validators, RefResolver
 from enum import Enum, auto
 from pathlib import Path
 import toml
-from toml import ordered as toml_ordered
 import yaml
 import argparse
 from functools import reduce
 import json
-import re
-from typing import Dict, Optional, Sequence, Any
 
 
-def get_path(dct: Dict[str, Any], path, sep='/'):
+try:
+    from rich.console import Console
+    console: Optional[Console] = Console()
+except:
+    console = None
+
+VALIDATE_ROOT = Path(__file__).parent.absolute()
+
+log = getLogger(__name__)
+
+log.setLevel(logging.INFO)
+
+
+def get_path(dct: Dict[str, Any], path, sep='.'):
     if isinstance(path, str):
         path = path.split(sep)
     try:
         return reduce(dict.__getitem__, path, dct)
-    except:
+    except KeyError as e:
+        log.warning(
+            "[get_path] Key '%s' in path %s was not found! Full ",
+            e.args[0], ".".join(path)
+        )
         return None
 
 
 parser = argparse.ArgumentParser(description='Validate LWC design files.')
 
-parser.add_argument('design_file')
-
-parser.add_argument('--schema-file', default="lwc.schema.json")
-parser.add_argument(
-    '--write-toml', type=str, default=None)
-parser.add_argument(
-    '--write-json', type=str, default=None)
-parser.add_argument(
-    '--write-yaml', type=str, default=None)
-# parser.add_argument(
-#     '--with-defaults', action='store_true', default=False)
-
-parser.add_argument(
-    '--check-paths', action='store_true')
+parser.add_argument('design_file', help="LWC variant description file")
+parser.add_argument('--schema-file', type=Path,
+                    default=VALIDATE_ROOT.parent / "lwc.schema.json")
+parser.add_argument('--write-toml', type=str, default=None)
+parser.add_argument('--write-json', type=str, default=None)
+parser.add_argument('--write-yaml', type=str, default=None)
+parser.add_argument('--check-paths', action='store_true')
+parser.add_argument('--verbose', action='store_true')
 
 args = parser.parse_args()
 
@@ -145,15 +154,6 @@ if failed:
     exit(1)
 
 
-def get_path(dct: Dict[str, Any], path, sep='.'):
-    if isinstance(path, str):
-        path = path.split(sep)
-    try:
-        return reduce(dict.__getitem__, path, dct)
-    except:
-        return None
-
-
 def set_path(dct: Dict[str, Any], path, value, sep='.'):
     if isinstance(path, str):
         path = path.split(sep)
@@ -186,6 +186,10 @@ if args.check_paths:
             assert path.exists(), f"file {path} does not exist."
             assert path.is_file(), f"{path} is not a regular file."
 
+if args.verbose:
+    if console:
+        console.print_json(data=design)
+
 if failed:
     print("Design file is INVALID")
     exit(1)
@@ -199,9 +203,9 @@ print("\nDesign file is VALID    \n")
 
 if args.write_toml:
     with open(args.write_toml, "w") as tf:
-        # toml.dump(design, tf, encoder=toml_ordered.TomlOrderedEncoder())
         toml.dump(design, tf, encoder=toml.TomlEncoder(
-            _dict=OrderedDict, preserve=True))
+            _dict=OrderedDict, preserve=True)
+        )
 
 if args.write_yaml:
     with open(args.write_yaml, "w") as tf:
@@ -210,15 +214,3 @@ if args.write_yaml:
 if args.write_json:
     with open(args.write_json, "w") as tf:
         json.dump(design, tf, sort_keys=False, indent=4)
-
-#
-# \emph{\textbf{\texttt{ -> \uline{\textbf{\texttt{
-# \setlist[itemize]{label={\tiny$\bullet$}, leftmargin = *}
-# \begin{itemize}[
-#   labelsep=1pt,
-#   labelindent=0pt,%0.5\parindent,
-#   itemindent=0pt,
-#   leftmargin=1pt,
-#   before=\setlength{\listparindent}{-\leftmargin},
-#   label=\textbullet
-# ]

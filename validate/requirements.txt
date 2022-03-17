@@ -1,7 +1,8 @@
-jsonschema[format] >= "4.2.1"
+jsonschema[format] >= "4.2"
 toml >= "0.10.2"
-PyYAML >= "5.4.1"
-types-PyYAML >= "6.0.1"
-json-schema-for-humans >= "0.39.1"
+PyYAML >= "5.3"
+json-schema-for-humans >= "0.39"
 markdown2 >= "2.4.1"
 weasyprint >= "53.4"
+rich >= "10"
+markdown2

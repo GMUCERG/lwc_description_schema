@@ -276,6 +276,21 @@
                                 "gimli24v1"
                             ]
                         },
+                        "key_bits": {
+                            "description": "Size of key in bits.",
+                            "type": "integer",
+                            "default": 128
+                        },
+                        "npub_bits": {
+                            "description": "Size of public nonce in bits.",
+                            "type": "integer",
+                            "default": 128
+                        },
+                        "tag_bits": {
+                            "description": "Size of tag in bits.",
+                            "type": "integer",
+                            "default": 128
+                        },
                         "input_sequence": {
                             "description": "Order in which different input segment types should be fed to PDI.",
                             "type": "object",
@@ -321,21 +336,6 @@
                             },
                             "required": []
                         }
-                    },
-                    "key_bits": {
-                        "description": "Size of key in bits.",
-                        "type": "integer",
-                        "default": 128
-                    },
-                    "npub_bits": {
-                        "description": "Size of public nonce in bits.",
-                        "type": "integer",
-                        "default": 128
-                    },
-                    "tag_bits": {
-                        "description": "Size of tag in bits.",
-                        "type": "integer",
-                        "default": 128
                     },
                     "additionalProperties": false
                 },
@@ -410,6 +410,7 @@
                             "type": "object",
                             "properties": {
                                 "bit_width": {
+                                    "description": "Width of the `rdi` port in bits (`rw`), 0 if the port is not used.",
                                     "type": "integer",
                                     "minimum": 0,
                                     "maximum": 2048
@@ -472,13 +473,23 @@
                             "description": "Claimed order of protectcion. 0 means unprotected.",
                             "type": "integer",
                             "default": 0
+                        },
+                        "notes": {
+                            "description": "Additional notes or comments on the claimed SCA protection.",
+                            "type": [
+                                "string",
+                                "array"
+                            ],
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": []
                         }
                     },
-                    "additionalProperties": false,
+                    "additionalProperties": true,
                     "required": [
                         "order"
-                    ],
-                    "additionalProperties": false
+                    ]
                 }
             },
             "required": [
