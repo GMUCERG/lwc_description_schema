@@ -5,12 +5,11 @@
 #
 import json
 import re
-from typing import Dict, Optional, Sequence, Any
+from typing import Dict, Optional, List, Any, Union
 import io
 from functools import reduce
 import json
 from typing import Any, Dict, Mapping, OrderedDict, Type
-import jsonschema
 from jsonschema import Draft202012Validator, draft202012_format_checker, validators, RefResolver
 from enum import Enum, auto
 from pathlib import Path
@@ -23,6 +22,7 @@ import json
 import re
 from typing import Dict, Optional, Sequence, Any
 import io
+
 
 def get_path(dct: Dict[str, Any], path, sep='/'):
     if isinstance(path, str):
@@ -37,7 +37,9 @@ def get_path(dct: Dict[str, Any], path, sep='/'):
 # License: Apache-2.0"
 # Modified by Kamyar Mohajerani. All modifications are under Apache-2.0 license.
 
+
 name_monospace: bool = True
+
 
 class Parser:
     def __init__(self, schema_object, tab_size=4) -> None:
@@ -48,7 +50,7 @@ class Parser:
         self,
         obj: Dict,
         add_type: bool = False
-    ) -> Sequence[str]:
+    ) -> List[str]:
         """Construct description line of property, definition, or item."""
         description_line = []
 
@@ -110,9 +112,9 @@ class Parser:
 
     def _parse_object(
         self,
-        obj: Dict,
+        obj: Dict[str, Union[str, int, bool, Dict[str, Any], List]],
         name: str,
-        output_lines: Optional[str] = None,
+        output_lines: Optional[List[str]] = None,
         level: int = -1,
         required: bool = True
     ) -> Sequence[str]:
@@ -128,8 +130,9 @@ class Parser:
         indentation = " " * self.tab_size * level if level > 0 else ""
         indentation_items = " " * self.tab_size * (level+1)
 
-        ref: str = obj.get('$ref')
+        ref = obj.get('$ref')
         if ref:
+            assert isinstance(ref, str)
             ref_path = ref.removeprefix('#/')
             defi = get_path(self.schema_object, ref_path)
             if ref_path:
@@ -140,11 +143,12 @@ class Parser:
         if description_line_base:
             description_line_base.insert(0, ":")
 
-        description_line = list(map(lambda line: line.replace(
-            "\n\n", "<br>" + indentation_items), description_line_base))
-
-        # Add full line to output
-        description_line = " ".join(description_line)
+        description_line = list(
+            map(
+                lambda line: line.replace("\n\n", "<br>" + indentation_items),
+                description_line_base
+            )
+        )
 
         def proc_type(typ, parent_is_array=False):
             if typ:
@@ -173,7 +177,7 @@ class Parser:
                 name_formatted = f"***`{name}`***" if name_monospace else f"**{name}**"
             pre = indentation + "- " if level >= 0 else ""
             output_lines.append(
-                f"{pre}{name_formatted}{obj_type}{description_line}\n"
+                f"{pre}{name_formatted}{obj_type}{' '.join(description_line)}\n"
             )
 
         # Recursively add items and definitions:
@@ -188,9 +192,10 @@ class Parser:
         #         )
 
         # Recursively add child properties
-        required_fields = obj.get("required", [])
+        required_fields: List = obj.get("required", [])
+        assert isinstance(required_fields, list)
         if "properties" in obj:
-            for property_name, property_obj in obj["properties"].items():
+            for property_name, property_obj in obj.get("properties", {}).items():
                 output_lines = self._parse_object(
                     property_obj,
                     property_name,
@@ -207,9 +212,9 @@ class Parser:
         return output_lines
 
     def generate_md(self) -> Sequence[str]:
-        schema_object = self.schema_object
         """Parse JSON Schema object to markdown text."""
-        output_lines = []
+        schema_object = self.schema_object
+        output_lines: List[str] = []
 
         # Add title and description
         # if "title" in schema_object:
@@ -225,7 +230,8 @@ class Parser:
         #         output_lines.append(f"## {name}:\n")
         #         for obj_name, obj in schema_object[key].items():
         #             output_lines.extend(self._parse_object(obj, obj_name))
-        output_lines.extend(self._parse_object(schema_object, schema_object.get('title', "Schema"), required=True))
+        output_lines.extend(self._parse_object(
+            schema_object, schema_object.get('title', "Schema"), required=True))
 
         # Add examples
         # if "examples" in schema_object:
@@ -238,21 +244,15 @@ class Parser:
 
 
 #############################################
-# end of code borrowed from jsonschema2md.py
+# end of code based on jsonschema2md.py
 #############################################
 
 
-parser = argparse.ArgumentParser(description='Validate LWC design files.')
-
-parser.add_argument('--schema-file', default="lwc.schema.json")
-
-
-parser.add_argument(
-    '--html', action='store_true')
-parser.add_argument(
-    '--markdown', action='store_true', default=True)
-
-args = parser.parse_args()
+arg_parser = argparse.ArgumentParser(description='Validate LWC design files.')
+arg_parser.add_argument('--schema-file', default="lwc.schema.json")
+arg_parser.add_argument('--html', action='store_true')
+arg_parser.add_argument('--markdown', action='store_true', default=True)
+args = arg_parser.parse_args()
 
 with open(args.schema_file) as sf:
     schema = json.load(sf)
